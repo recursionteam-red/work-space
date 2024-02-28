@@ -82,3 +82,43 @@ const mino = {
     ]
 
 }
+
+static function embody(minoOperate, minoCrash, minoRotate, minoDelete, minoOrder, calScore){
+            
+}
+
+
+
+
+function minoOperate(){
+            
+}
+//左右と落下
+
+function minoCrash(){
+            
+}
+//衝突判定
+
+function minoRotate(){
+            
+}
+//回転
+
+function minoDelete(){
+            
+}
+//一列揃ったミノの削除
+
+function minoOrder(){
+            
+}
+//残ったミノを一列おろす
+
+function calScore(){
+            
+}
+//消えた列からスコア加算
+
+
+            
