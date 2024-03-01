@@ -134,20 +134,39 @@ function minoRotate(){
 }
 //回転
 
+//消す行である1次元目のインデックスを返す
+function DeleteOneDimensional(){
+    //javascriptは配列は全て動的配列
+    let deleteRowIndex = [];
+
+    for(let i = 0; i < field.length; i++){
+        arr = field[i];
+        for(let j = 1; j < arr.length - 1; j++){
+            if(arr[j] === 0) continue;
+            if(j == arr.length -2 && arr[j] != 0) deleteRowIndex.push(i);
+            
+        }
+    }
+    return deleteRowIndex;
+}
+
+//消して最上位に何もないフィールドを生成（残ったミノを1列おろす動作も入っている）
 function minoDelete(){
-            
-}
-//一列揃ったミノの削除
 
-function minoOrder(){
-            
-}
-//残ったミノを一列おろす
+    let DeleteCheckResultArray = DeleteOneDimensional();
 
+        for(i = 0; i < DeleteCheckResultArray.length; i++){
+            let DeleteRow = field.splice(DeleteCheckResultArray[i], 1);
+            field.unshift([100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100]);
+        }
+        return field;
+}
+
+//1列ごとに10点
 function calScore(){
-            
+    let DeleteCheckResultArray = DeleteOneDimensional();
+    return DeleteCheckResultArray.length * 10;
 }
-//消えた列からスコア加算
 
 
             
