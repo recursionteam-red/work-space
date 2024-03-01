@@ -95,10 +95,39 @@ function minoOperate(){
 }
 //左右と落下
 
-function minoCrash(){
-            
+function isColliding(field, minoShape, minoPosition, action) {
+    // field: プレイフィールドの二次元配列
+    // minoShape: ミノの形状を表す二次元配列
+    // minoPosition: ミノの現在位置（{x: _, y: _}のようなオブジェクト）
+    // action: 移動方向や回転（'left', 'right', 'down', 'rotate' などの文字列）
+
+    // ここで衝突判定のロジックを実装
+    // 衝突があればtrueを返し、なければfalseを返す
 }
-//衝突判定
+
+document.addEventListener('keydown', function(event) {
+    let action;
+    switch (event.key) {
+        case 'ArrowLeft':
+            action = 'left';
+            break;
+        case 'ArrowRight':
+            action = 'right';
+            break;
+        case 'ArrowUp':
+            action = 'rotate';
+            break;
+        case 'ArrowDown':
+            action = 'down';
+            break;
+        // 他のキーに関する処理
+    }
+
+    if (action && !isColliding(field, minoShape, minoPosition, action)) {
+        // 衝突がなければミノの位置を更新する処理　　ここが実質operateF
+    }
+});
+
 
 function minoRotate(){
             
