@@ -142,7 +142,7 @@ function DeleteOneDimensional(){
     for(let i = 0; i < field.length; i++){
         arr = field[i];
         for(let j = 1; j < arr.length - 1; j++){
-            if(arr[j] === 0) continue;
+            if(arr[j] === 0) break;
             if(j == arr.length -2 && arr[j] != 0) deleteRowIndex.push(i);
             
         }
