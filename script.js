@@ -83,15 +83,35 @@ const mino = {
 
 }
 
-static function embody(minoOperate, minoCrash, minoRotate, minoDelete, minoOrder, calScore){
-            
+class masterClass {
+
+    static embody(minoOperate, minoCrash, minoRotate, minoDelete, minoOrder, calScore){
+        // 関数の内容
+    }
 }
 
 
 
-
-function minoOperate(){
-            
+function minoOperate(minoPosition, action) {
+    // 仮作成
+    // action: 'left', 'right', 'down', 'rotate'
+    switch (action) {
+        case 'left':
+            minoPosition.x -= 1;
+            break;
+        case 'right':
+            minoPosition.x += 1;
+            break;
+        case 'down':
+            minoPosition.y += 1;
+            break;
+        case 'rotate':
+            break;
+        default:
+            break; 
+    }
+    // ここでミノの位置を返す
+    return minoPosition;
 }
 //左右と落下
 
@@ -103,6 +123,8 @@ function isColliding(field, minoShape, minoPosition, action) {
 
     // ここで衝突判定のロジックを実装
     // 衝突があればtrueを返し、なければfalseを返す
+    
+
 }
 
 document.addEventListener('keydown', function(event) {
@@ -129,8 +151,38 @@ document.addEventListener('keydown', function(event) {
 });
 
 
-function minoRotate(){
-            
+function minoRotate(minoShape,action) {
+    if (action !== 'rotate') {
+        return;
+    }
+    let newMinoShape = [];
+    // 二次元配列をコピーする
+    for (let i = 0; i < minoShape.length; i++) {
+        let row = [];
+        for (let j = 0; j < minoShape[i].length; j++) {
+            row.push(minoShape[i][j]);
+        }
+        newMinoShape.push(row);
+    }
+    // ここでnewMinoShapeを回転させる
+    // 転置する
+    const N = newMinoShape.length;
+    for (let i = 0; i < N; i++) {
+        for (let j = i; j < N; j++) {
+            // i == j の要素は転置不要。
+            if (i !== j) {
+                [newMinoShape[i][j], newMinoShape[j][i]] = [newMinoShape[j][i], newMinoShape[i][j]];
+            }
+        }
+    }
+    // 左右対称にする
+    for (let i = 0; i < N; i++) {
+        for (let j = 0; j < Math.floor(N / 2); j++) {
+            [newMinoShape[i][j], newMinoShape[i][N - 1 - j]] = [newMinoShape[i][N - 1 - j], newMinoShape[i][j]];
+        }
+    }
+    // 90度回転後のミノの形状を返す
+    return newMinoShape; 
 }
 //回転
 
