@@ -3,17 +3,45 @@ mainDiv.classList.add("d-flex", "justify-content-center", "m-8");
 //大枠
 
 const titleDiv = document.createElement("div");
-title.classList.add("m-auto")
-const title = document.createElement("h1")
-title.innerHTML = "Tetris"
-titleDiv.appendChild(title)
+title.classList.add("m-auto");
+const title = document.createElement("h1");
+title.innerHTML = "Tetris";
+titleDiv.appendChild(title);
 //タイトル
 
 const display = document.createElement("div");
 
 display.classList.add("bg-gray");
 
-mainDiv.appendChild(field)
+mainDiv.appendChild(field);
+
+//仮作成
+// キーボードイベントリスナーの設定（例：左右下回転移動）
+document.addEventListener('keydown', (event) => {
+    switch(event.key) {
+        case "ArrowLeft":
+            console.log("Left key pressed");
+            // ここに左移動のロジックを実装
+            break;
+        case "ArrowRight":
+            console.log("Right key pressed");
+            // ここに右移動のロジックを実装
+            break;
+        case "ArrowDown":
+            console.log("Down key pressed");
+            // ここに速い下移動のロジックを実装
+            break;
+        case "ArrowUp":
+            console.log("Up key pressed");
+            // ここに回転のロジックを実装
+            break;
+        case "None":
+            console.log("None key pressed");
+            // ここに下移動のロジックを実装
+            break;
+        // さらなるキー操作の処理...
+        }
+});
 /////////////////////////↑フロント↑////////////////////////////
 
 
