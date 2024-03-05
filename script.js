@@ -248,5 +248,44 @@ function calScore(){
     return DeleteCheckResultArray.length * 10;
 }
 
+// 中心座標を設定する辞書
+const centerPositions = {
+    I: {y: 1, x: 2},
+    O: {y: 0, x: 0},
+    T: {y: 1, x: 1},
+    S: {y: 0, x: 1},
+    Z: {y: 0, x: 1},
+    J: {y: 1, x: 1},
+    L: {y: 1, x: 1}
+};
+
+// ランダムにミノを生成し，fieldに反映させる関数
+function generateMino(field, mino) {
+    // ミノのキーを配列として取得
+    const keys = Object.keys(mino);
+    // ランダムにキーを選択
+    const randomKey = keys[Math.floor(Math.random() * keys.length)];
+    // 選択されたミノを取得
+    const selectedMino = mino[randomKey];
+    // 選択されたミノの中心座標を取得
+    const center = centerPositions[randomKey];
+
+    // fieldの初期位置を定義
+    const startPosition = {y: 0, x: 5};
+
+    // ミノをfieldに配置
+    for (let y = 0; y < selectedMino.length; y++) {
+        for (let x = 0; x < selectedMino[y].length; x++) {
+            if (selectedMino[y][x] === 1) {
+                // ミノのブロックがある場所にfieldを更新
+                field[startPosition.y + y + center.y][startPosition.x + x - center.x] = 1;
+            }
+        }
+    }
+}
+
+// 関数をテストする
+generateMino(field, mino);
+console.log(field);
 
             
