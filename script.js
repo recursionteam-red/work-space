@@ -1,19 +1,155 @@
-const mainDiv = document.getElementById("target");
-mainDiv.classList.add("d-flex", "justify-content-center", "m-8");
+const mainDiv = document.createElement("div");
+mainDiv.classList.add("d-flex", "justify-content-center","align-items-center", "vh-100", "flex-column");
+const titleDiv = document.createElement("div");
+const show = document.createElement("div");
+show.classList.add("d-flex", "justify-content-center", "align-items-center", "m-3");
+const operateDiv = document.createElement("div");
+const playDiv = document.createElement("div");
+const paramDiv = document.createElement("div");
 //大枠
 
-const titleDiv = document.createElement("div");
-title.classList.add("m-auto");
+
+titleDiv.classList.add("d-flex","justify-content-center", "align-items-center", "col-2", "m-5", "h-40");
 const title = document.createElement("h1");
 title.innerHTML = "Tetris";
 titleDiv.appendChild(title);
 //タイトル
 
-const display = document.createElement("div");
 
-display.classList.add("bg-gray");
+operateDiv.classList.add("div-overlay", "custom-margin", "d-flex", "justify-content-center", "align-items-center","bg-purple", "m-5", "p-2", "h-100","flex-column", "col-3");
+//左画面の枠に設定
+const startButton = document.createElement("button");
+startButton.classList.add("btn","pixel-button");
+startButton.setAttribute("id", "start-retry-button");         ///start,retry button id///
+const h2 = document.createElement("h2");
+const Text1 = document.createTextNode("START");
+h2.appendChild(Text1);
+startButton.appendChild(h2);
+//スタートボタン
 
-mainDiv.appendChild(field);
+const pauseButton = document.createElement("button");
+pauseButton.classList.add("btn","pixel-button");
+pauseButton.setAttribute("id", "pause-restart-button");       ///pause, restart button id///
+const h2_2 = document.createElement("h2");
+const gameText2 = document.createTextNode("PAUSE");
+h2_2.appendChild(gameText2);
+pauseButton.appendChild(h2_2);
+//ポーズボタン
+
+const explainDiv = document.createElement("div");
+explainDiv.classList.add("w-100", "d-flex", "flex-column", "justify-content-center", "align-items-center");
+const br1 = document.createElement("br");
+const br2 = document.createElement("br");
+const explain1 = document.createElement("h5");
+explain1.innerHTML = "↑ rotate";
+const explain2 = document.createElement("h5");
+explain2.innerHTML = "←→move";
+const explain3 = document.createElement("h5");
+explain3.innerHTML = "↓ drop";
+explainDiv.appendChild(explain1);
+explainDiv.appendChild(br1);
+explainDiv.appendChild(explain2);
+explainDiv.appendChild(br2);
+explainDiv.appendChild(explain3);
+
+//操作説明
+
+const buttonWrapper1 = document.createElement("div");
+buttonWrapper1.classList.add("w-100", "p-2", "d-flex", "justify-content-center", "align-items-center");
+const buttonWrapper2 = document.createElement("div");
+buttonWrapper2.classList.add("w-100", "p-2", "d-flex", "justify-content-center", "align-items-center", "m-5");
+buttonWrapper1.appendChild(startButton);
+buttonWrapper2.appendChild(pauseButton);
+operateDiv.appendChild(buttonWrapper1);
+operateDiv.appendChild(buttonWrapper2);
+operateDiv.appendChild(explainDiv);
+//左画面作成
+
+const displayDiv = document.createElement("div");
+displayDiv.classList.add("d-flex", "custom-margin", "justify-content-center", "align-items-center","bg-primary", "m-8", "h-70", "col-3");
+displayDiv.style.width = "300px";
+displayDiv.style.height= "600px";
+const display = document.createElement("canvas");
+display.setAttribute("id", "play-canvas");            ///field canvas id///
+displayDiv.appendChild(display);
+//中央フィールド作成
+
+paramDiv.classList.add("div-overlay", "custom-margin", "d-flex", "justify-content-center", "align-items-center", "m-5", "p-5", "col-3", "flex-column");
+//右側枠作成
+
+let score = document.createElement("h3");
+let scoreVal = document.createElement("h3");
+scoreVal.setAttribute("id", "current_score");         ///score  id///
+let next = document.createElement("h3");
+score.innerHTML = "SCORE";
+scoreVal.innerHTML = "0";
+next.innerHTML = "NEXT";
+let nextCanvas = document.createElement("canvas");
+nextCanvas.setAttribute("id", "next-mino-canvas", "height", "128", "width", "128");   ///next mino canvas id///
+//右側内容
+paramDiv.appendChild(next);
+paramDiv.appendChild(nextCanvas);
+paramDiv.appendChild(score);
+paramDiv.appendChild(scoreVal);
+
+//右側作成
+
+
+mainDiv.appendChild(titleDiv);
+mainDiv.appendChild(show);
+show.appendChild(operateDiv);
+show.appendChild(displayDiv);
+show.appendChild(paramDiv);
+//ブロック挿入
+
+document.getElementById("target").appendChild(mainDiv);
+
+//htmlに挿入
+
+///////////////bgm管理//////////////////////////////
+
+// ページが読み込まれたら、メインBGMを再生
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('welcomeBgm').play();
+});
+
+// 任意のボタンを押した時の効果音を再生する関数
+function playButtonSound() {
+    document.getElementById('buttonSound').play();
+};
+
+// BGMの一時停止/再開を切り替える関数
+function togglePauseBgm() {
+    const bgm = document.getElementById('startBgm'); // プレイ用のBGM
+
+    if (bgm.paused) {
+        bgm.play(); // BGMが一時停止中なら再生を再開
+    } else {
+        bgm.pause(); // BGMが再生中なら一時停止
+    }
+};
+
+// スタートボタンを押した時の処理
+document.getElementById('start-retry-button').addEventListener('click', function() {
+    playButtonSound(); // クリック音を再生
+
+    const welcomeBgm = document.getElementById('welcomeBgm'); // スタート画面のBGM
+    const startBgm = document.getElementById('startBgm'); // プレイ用のBGM
+
+    welcomeBgm.pause(); // スタート画面のBGMを一時停止
+    welcomeBgm.currentTime = 0; // BGMの再生位置を最初に戻す
+
+    startBgm.play(); // プレイ用のBGMを再生
+});
+
+// ポーズボタンを押した時の処理
+document.getElementById('pause-restart-button').addEventListener('click', function() {
+    playButtonSound(); // クリック音を再生
+    togglePauseBgm(); // BGMの一時停止/再開
+});
+
+
+///////////////bgm管理/////////////////////////////
 
 //仮作成
 // キーボードイベントリスナーの設定（例：左右下回転移動）

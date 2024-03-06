@@ -1,1 +1,68 @@
+.pixel-button {
+
+    font-size: 16px; /* ピクセルフォントのサイズ */
+    color: #FFFFFF; /* 文字色 */
+    padding: 10px 20px; /* ボタン内の余白 */
+    background: #333333; /* ボタンの背景色 */
+    border: 3px solid #000000; /* 黒いピクセル風の枠線 */
+    cursor: pointer; /* ホバー時のカーソル */
+    outline: none; /* フォーカス時のアウトラインを削除 */
+    user-select: none; /* テキスト選択の無効化 */
+    box-shadow: 0 0 0px rgba(0, 0, 0, 0.1); /* シンプルな影を追加 */
+    transition: background-color 0.2s, color 0.2s; /* ホバー時の遷移効果 */
+  }
+  
+  .pixel-button:hover {
+    background: #555555; /* ホバー時の背景色を暗く */
+    color: #FFFF00; /* ホバー時の文字色を変更 */
+  }
+
+  @font-face {
+    font-family: 'BestTenCRT';
+    src: url('https://recursionteam-red.github.io/work-space/BestTen-CRT.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'BestTenDOT';
+    src: url('https://recursionteam-red.github.io/work-space/BestTen-DOT.otf') format('opentype');
+}
+body {
+    font-family: 'BestTenCRT', sans-serif;
+    background-image: url('https://recursionteam-red.github.io/work-space/background.webp');
+    background-repeat: repeat;
+}
+
+.div-overlay {
+    position: relative; /* 疑似要素の基準点として機能させる */
+}
+
+.div-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 20px; /* 疑似要素に角を丸くするスタイルを適用 */
+    z-index: -1;
+}
+
+
+h1, h3, h5 {
+    color: #FFFFFF; /* 白色に設定 */
+    text-shadow: 3px 3px 0 rgba(0, 0, 0, 1), /* 右下に強い黒い影 */
+                 -1px -1px 0 rgba(0, 0, 0, 1), /* 左上に強い黒い影 */
+                 1px -1px 0 rgba(0, 0, 0, 1), /* 右上に強い黒い影 */
+                 -1px 1px 0 rgba(0, 0, 0, 1); /* 左下に強い黒い影 */
+}
+
+h1 {
+    font-size: 70px; /* フォントサイズを48pxに設定 */
+}
+
+.custom-margin {
+    margin:70px; /* 例として、全方向に40pxのマージンを設定 */
+}
+
 
