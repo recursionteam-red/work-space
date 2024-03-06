@@ -43,45 +43,91 @@ const field = [
             [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100] 
 ]
 
-const mino = {
+class Mino {
+    constructor(shape, color, shapeColors) {
+        this.shapes = {
+            I: [
+                [0, 0, 0, 0],
+                [1, 1, 1, 1],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+            ],
+            O: [
+                [1, 1],
+                [1, 1],
+            ],
+            T: [
+                [0, 1, 0],
+                [1, 1, 1],
+                [0, 0, 0],
+            ],
+            S: [
+                [0, 1, 1],
+                [1, 1, 0],
+                [0, 0, 0],
+            ],
+            Z: [
+                [1, 1, 0],
+                [0, 1, 1],
+                [0, 0, 0],
+            ],
+            J: [
+                [1, 0, 0],
+                [1, 1, 1],
+                [0, 0, 0],
+            ],
+            L: [
+                [0, 0, 1],
+                [1, 1, 1],
+                [0, 0, 0],
+            ]
+        };   
+        this.colors = {
+            cyan: "#00FFFF",
+            yellow: "#FFFF00",
+            purple: "#800080",
+            blue: "#0000FF",
+            orange: "#FFA500",
+            green: "#008000",
+            red: "#FF0000",
+            pink: "#FFC0CB",
+            grey: "#808080",
+            brown: "#A52A2A", 
+            // 他の色もここに追加できる
+        };
+        this.shapeColors = {
+            I: "shian",
+            O: "yellow",
+            T: "porpoll",
+            S: "blue",
+            Z: "orange",
+            J: "green",
+            L: "red",
+            // 他の形状と色のマッピングもここに追加できる
+        };
 
-    I: [
-        [0, 0, 0, 0],
-        [1, 1, 1, 1],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-    ],
-    O: [
-        [1, 1],
-        [1, 1],
-    ],
-    T: [
-        [0, 1, 0],
-        [1, 1, 1],
-        [0, 0, 0],
-    ],
-    S: [
-        [0, 1, 1],
-        [1, 1, 0],
-        [0, 0, 0],
-    ],
-    Z: [
-        [1, 1, 0],
-        [0, 1, 1],
-        [0, 0, 0],
-    ],
-    J: [
-        [1, 0, 0],
-        [1, 1, 1],
-        [0, 0, 0],
-    ],
-    L: [
-        [0, 0, 1],
-        [1, 1, 1],
-        [0, 0, 0],
-    ]
-
-}
+        // 中心座標を設定する辞書
+        this.centerPositions = {
+            I: {y: 1, x: 2},
+            O: {y: 0, x: 0},
+            T: {y: 1, x: 1},
+            S: {y: 0, x: 1},
+            Z: {y: 0, x: 1},
+            J: {y: 1, x: 1},
+            L: {y: 1, x: 1},
+        };
+    }
+    getRandomShapeAndColor() {
+        const keys = Object.keys(this.shapes);
+        const randomKey = keys[Math.floor(Math.random() * keys.length)];
+        const colorName = this.shapeColors[randomKey] || 'grey'; // マッピングされていない場合はデフォルト色
+        return {
+            shape: this.shapes[randomKey],
+            color: this.colors[colorName],
+            centerPosition: this.centerPositions[randomKey]
+        };
+    }
+};
 
 class masterClass {
 
@@ -220,35 +266,25 @@ function calScore(){
     return DeleteCheckResultArray.length * 10;
 }
 
-// 中心座標を設定する辞書
-const centerPositions = {
-    I: {y: 1, x: 2},
-    O: {y: 0, x: 0},
-    T: {y: 1, x: 1},
-    S: {y: 0, x: 1},
-    Z: {y: 0, x: 1},
-    J: {y: 1, x: 1},
-    L: {y: 1, x: 1}
-};
+
 
 // ランダムにミノを生成し，fieldに反映させる関数
-function generateMino(field, mino) {
-    // ミノのキーを配列として取得
-    const keys = Object.keys(mino);
-    // ランダムにキーを選択
-    const randomKey = keys[Math.floor(Math.random() * keys.length)];
+function generateMino(field) {
+
+    const mino = new Mino();
+
     // 選択されたミノを取得
-    const selectedMino = mino[randomKey];
+    const selectedMino = mino.getRandomShapeAndColor();
     // 選択されたミノの中心座標を取得
-    const center = centerPositions[randomKey];
+    const center = selectedMino.centerPosition;
 
     // fieldの初期位置を定義
     const startPosition = {y: 0, x: 5};
 
     // ミノをfieldに配置
-    for (let y = 0; y < selectedMino.length; y++) {
-        for (let x = 0; x < selectedMino[y].length; x++) {
-            if (selectedMino[y][x] === 1) {
+    for (let y = 0; y < selectedMino.shape.length; y++) {
+        for (let x = 0; x < selectedMino.shape[y].length; x++) {
+            if (selectedMino.shape[y][x] === 1) {
                 // ミノのブロックがある場所にfieldを更新
                 field[startPosition.y + y + center.y][startPosition.x + x - center.x] = 1;
             }
@@ -257,7 +293,7 @@ function generateMino(field, mino) {
 }
 
 // 関数をテストする
-generateMino(field, mino);
+generateMino(field);
 console.log(field);
 
             
