@@ -196,29 +196,57 @@ document.addEventListener('keydown', (event) => {
 
 ////////////////////////↓環境↓////////////////////////////////
 
-const field = [
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100] 
-]
+class Cell {
+    constructor(value = 0, isWall = false) {
+        this.value = value; // セルの値 (ミノの有無、種類を示す値や0)
+        this.isWall = isWall; // セルが壁かどうかのフラグ
+    }
+}
+
+class Field {
+    constructor(height, width) {
+        this.height = height;
+        this.width = width;
+        this.grid = this.initializeField();
+    }
+
+    initializeField() {
+        let field = Array.from({ length: this.height }, () =>
+            Array.from({ length: this.width }, (v, i) => 
+                new Cell(0, i === 0 || i === this.width - 1)
+            )
+        );
+        
+        // 最上行と最下行を壁に設定
+        field[0].forEach(cell => cell.isWall = true);
+        field[this.height - 1].forEach(cell => cell.isWall = true);
+        
+        return field;
+    }
+
+    // フィールドにミノを配置するメソッド
+    placeMino(mino, position) {
+        for (let y = 0; y < mino.shape.length; y++) {
+            for (let x = 0; x < mino.shape[y].length; x++) {
+                if (mino.shape[y][x] !== 0) {
+                    let fieldY = position.y + y;
+                    let fieldX = position.x + x;
+                    if (fieldY >= 0 && fieldY < this.height && fieldX >= 0 && fieldX < this.width) {
+                        this.grid[fieldY][fieldX].value = mino.shape[y][x]; // ミノの値で更新
+                        this.grid[fieldY][fieldX].isWall = false; // 壁ではない
+                    }
+                }
+            }
+        }
+    }
+
+    // フィールドの状態をコンソールに表示するメソッド（デバッグ用）
+    printField() {
+        this.grid.forEach(row => {
+            console.log(row.map(cell => cell.isWall ? 100 : cell.value).join(' '));
+        });
+    }
+}
 
 class Mino {
     constructor(shape, color, shapeColors) {
@@ -305,6 +333,18 @@ class Mino {
         };
     }
 };
+
+テストの実行
+const field = new Field(22, 12); // 22行12列のフィールドを作成
+const mino = new Mino(); // Minoインスタンスを作成
+const selectedMino = mino.getRandomShapeAndColor(); // ランダムにミノを選択
+
+// ミノをフィールドの初期位置に配置
+// 配置の前にminoのshapeやpositionを適切に設定する
+field.placeMino(selectedMino, { y: 1, x: 5 }); // ミノをフィールドに配置する例
+
+// フィールドの状態を表示
+field.printField();
 
 class masterClass {
 
@@ -444,7 +484,8 @@ function calScore(){
 }
 
 
-
+//まだ今は必要という感じ
+const field = new Field(22, 12); // 22行12列のフィールドを作成
 // ランダムにミノを生成し，fieldに反映させる関数
 function generateMino(field) {
 
@@ -462,15 +503,20 @@ function generateMino(field) {
     for (let y = 0; y < selectedMino.shape.length; y++) {
         for (let x = 0; x < selectedMino.shape[y].length; x++) {
             if (selectedMino.shape[y][x] === 1) {
-                // ミノのブロックがある場所にfieldを更新
-                field[startPosition.y + y + center.y][startPosition.x + x - center.x] = 1;
+                let fieldY = startPosition.y + y;
+                let fieldX = startPosition.x + x;
+                if (fieldY >= 0 && fieldY < field.height && fieldX >= 0 && fieldX < field.width) {
+                    // ここでCellオブジェクトの値を更新
+                    field.grid[fieldY][fieldX].value = selectedMino.color; // 色情報で更新
+                    field.grid[fieldY][fieldX].isWall = false; // これは壁ではない
+                }
             }
         }
     }
 }
 
 // 関数をテストする
-generateMino(field);
-console.log(field);
+generateMino(field); // ミノを生成しフィールドに配置
+field.printField(); // フィールドの状態をコンソールに表示（デバッグ用）
 
             
