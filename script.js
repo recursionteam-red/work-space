@@ -37,20 +37,25 @@ pauseButton.appendChild(h2_2);
 //ポーズボタン
 
 const explainDiv = document.createElement("div");
-explainDiv.classList.add("w-100", "d-flex", "flex-column", "justify-content-center", "align-items-center");
-const br1 = document.createElement("br");
-const br2 = document.createElement("br");
-const explain1 = document.createElement("h5");
+explainDiv.classList.add("w-100", "d-flex", "flex-column", "justify-content-center", "align-items-center", "p-2");
+const explainWrapper1 = document.createElement("div");
+const explainWrapper2 = document.createElement("div");
+const explainWrapper3 = document.createElement("div");
+explainWrapper1.classList.add("d-flex", "flex-column", "justify-content-center", "align-items-center", "m-2", "p-2");
+explainWrapper2.classList.add("d-flex", "flex-column", "justify-content-center", "align-items-center", "m-2", "p-2");
+explainWrapper3.classList.add("d-flex", "flex-column", "justify-content-center", "align-items-center", "m-2", "p-2");
+const explain1 = document.createElement("h4");
 explain1.innerHTML = "↑ rotate";
-const explain2 = document.createElement("h5");
-explain2.innerHTML = "←→move";
-const explain3 = document.createElement("h5");
-explain3.innerHTML = "↓ drop";
-explainDiv.appendChild(explain1);
-explainDiv.appendChild(br1);
-explainDiv.appendChild(explain2);
-explainDiv.appendChild(br2);
-explainDiv.appendChild(explain3);
+const explain2 = document.createElement("h4");
+explain2.innerHTML = "← →move";
+const explain3 = document.createElement("h4");
+explain3.innerHTML = "↓  drop ";
+explainWrapper1.appendChild(explain1);
+explainDiv.appendChild(explainWrapper1);
+explainWrapper2.appendChild(explain2);
+explainDiv.appendChild(explainWrapper2);
+explainWrapper3.appendChild(explain3);
+explainDiv.appendChild(explainWrapper3);
 
 //操作説明
 
