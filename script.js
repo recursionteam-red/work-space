@@ -108,15 +108,40 @@ document.getElementById("target").appendChild(mainDiv);
 
 ///////////////bgm管理//////////////////////////////
 
-// ページが読み込まれたら、メインBGMを再生
+// ページが完全に読み込まれた後に実行
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('welcomeBgm').play();
+    // 全てのaudio要素の音量を設定
+    const audios = document.querySelectorAll('audio');
+    audios.forEach(function(audio) {
+        audio.volume = 0.05; // 音量を0.05に設定
+    });
+
+    // メインBGMを再生してループさせる
+    const welcomeBgm = document.getElementById('welcomeBgm');
+    welcomeBgm.loop = true; // ループを有効化
+    welcomeBgm.play();
+
+    // スタートボタンを押した時の処理
+    document.getElementById('start-retry-button').addEventListener('click', function() {
+        playButtonSound(); // クリック音を再生
+        welcomeBgm.pause(); // スタート画面のBGMを一時停止
+        welcomeBgm.currentTime = 0; // BGMの再生位置を最初に戻す
+
+        const startBgm = document.getElementById('startBgm'); // プレイ用のBGM
+        startBgm.loop = true; // ループを有効化
+        startBgm.play(); // プレイ用のBGMを再生
+    });
+
+    // ポーズボタンを押した時の処理
+    document.getElementById('pause-restart-button').addEventListener('click', function() {
+        togglePauseBgm(); // BGMの一時停止/再開
+    });
 });
 
 // 任意のボタンを押した時の効果音を再生する関数
 function playButtonSound() {
     document.getElementById('buttonSound').play();
-};
+}
 
 // BGMの一時停止/再開を切り替える関数
 function togglePauseBgm() {
@@ -127,26 +152,10 @@ function togglePauseBgm() {
     } else {
         bgm.pause(); // BGMが再生中なら一時停止
     }
-};
 
-// スタートボタンを押した時の処理
-document.getElementById('start-retry-button').addEventListener('click', function() {
-    playButtonSound(); // クリック音を再生
-
-    const welcomeBgm = document.getElementById('welcomeBgm'); // スタート画面のBGM
-    const startBgm = document.getElementById('startBgm'); // プレイ用のBGM
-
-    welcomeBgm.pause(); // スタート画面のBGMを一時停止
-    welcomeBgm.currentTime = 0; // BGMの再生位置を最初に戻す
-
-    startBgm.play(); // プレイ用のBGMを再生
-});
-
-// ポーズボタンを押した時の処理
-document.getElementById('pause-restart-button').addEventListener('click', function() {
-    playButtonSound(); // クリック音を再生
-    togglePauseBgm(); // BGMの一時停止/再開
-});
+    // クリック音を再生
+    playButtonSound();
+}
 
 ///////////////bgm管理/////////////////////////////
 
