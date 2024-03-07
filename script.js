@@ -164,33 +164,6 @@ function togglePauseBgm() {
 
 ///////////////bgm管理/////////////////////////////
 
-//仮作成
-// キーボードイベントリスナーの設定（例：左右下回転移動）
-document.addEventListener('keydown', (event) => {
-    switch(event.key) {
-        case "ArrowLeft":
-            console.log("Left key pressed");
-            // ここに左移動のロジックを実装
-            break;
-        case "ArrowRight":
-            console.log("Right key pressed");
-            // ここに右移動のロジックを実装
-            break;
-        case "ArrowDown":
-            console.log("Down key pressed");
-            // ここに速い下移動のロジックを実装
-            break;
-        case "ArrowUp":
-            console.log("Up key pressed");
-            // ここに回転のロジックを実装
-            break;
-        case "None":
-            console.log("None key pressed");
-            // ここに下移動のロジックを実装
-            break;
-        // さらなるキー操作の処理...
-        }
-});
 /////////////////////////↑フロント↑////////////////////////////
 
 
@@ -306,6 +279,51 @@ class Mino {
     }
 };
 
+//仮作成
+let minoInstance = new Mino(); // Minoクラスのインスタンスを作成
+let currentMinoProperties = minoInstance.getRandomShapeAndColor(); // メソッドを呼び出してプロパティを取得
+let newMinoPosition;
+
+// キーボードイベントリスナーの設定（例：左右下回転移動）
+document.addEventListener('keydown', (event) => {
+    switch(event.key) {
+        case "ArrowLeft":
+            console.log("Left key pressed");
+            console.log(currentMinoProperties.centerPosition);
+            newMinoPosition = minoOperate(currentMinoProperties.centerPosition, "left");
+            console.log(newMinoPosition);
+            // ここに左移動のロジックを実装
+            // keyboad event listener
+            break;
+        case "ArrowRight":
+            console.log("Right key pressed");
+            console.log(currentMinoProperties.centerPosition);
+            newMinoPosition = minoOperate(currentMinoProperties.centerPosition, "right");
+            console.log(newMinoPosition);
+            // ここに右移動のロジックを実装
+            break;
+        case "ArrowDown":
+            console.log("Down key pressed");
+            // ここに速い下移動のロジックを実装
+            console.log(currentMinoProperties.centerPosition);
+            newMinoPosition = minoOperate(currentMinoProperties.centerPosition, "down");
+            console.log(newMinoPosition);
+            break;
+        case "ArrowUp":
+            console.log("Up key pressed");
+            // ここに回転のロジックを実装
+            console.log(currentMinoProperties.shape);
+            let newMinoShape = minoRotate(currentMinoProperties.shape);
+            console.log(newMinoShape);
+            currentMinoProperties.shape = newMinoShape;
+            break;
+        case "None":
+            console.log("None key pressed");
+            // ここに下移動のロジックを実装
+            break;
+        // さらなるキー操作の処理...
+        }
+});
 class masterClass {
 
     static embody(minoOperate, minoCrash, minoRotate, minoDelete, minoOrder, calScore){
@@ -350,34 +368,8 @@ function isColliding(field, minoShape, minoPosition, action) {
 
 }
 
-document.addEventListener('keydown', function(event) {
-    let action;
-    switch (event.key) {
-        case 'ArrowLeft':
-            action = 'left';
-            break;
-        case 'ArrowRight':
-            action = 'right';
-            break;
-        case 'ArrowUp':
-            action = 'rotate';
-            break;
-        case 'ArrowDown':
-            action = 'down';
-            break;
-        // 他のキーに関する処理
-    }
 
-    if (action && !isColliding(field, minoShape, minoPosition, action)) {
-        // 衝突がなければミノの位置を更新する処理　　ここが実質operateF
-    }
-});
-
-
-function minoRotate(minoShape,action) {
-    if (action !== 'rotate') {
-        return;
-    }
+function minoRotate(minoShape) {
     let newMinoShape = [];
     // 二次元配列をコピーする
     for (let i = 0; i < minoShape.length; i++) {
