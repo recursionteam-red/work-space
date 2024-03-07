@@ -148,16 +148,6 @@ document.getElementById('pause-restart-button').addEventListener('click', functi
     togglePauseBgm(); // BGMの一時停止/再開
 });
 
-document.getElementById('playAudioButton').addEventListener('click', function() {
-    // 音声ファイルの再生を試みる
-    const audio = document.getElementById('welcomeBgm'); // 例としてwelcomeBgmを使用
-    audio.play().then(() => {
-        console.log("Audio started successfully");
-    }).catch(error => {
-        console.error("Error occurred while starting audio:", error);
-    });
-});
-
 ///////////////bgm管理/////////////////////////////
 
 //仮作成
