@@ -43,13 +43,13 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
     border-radius: 20px; /* 疑似要素に角を丸くするスタイルを適用 */
     z-index: -1;
 }
 
 
-h1, h3, h5 {
+h1, h3, h4 {
     color: #FFFFFF; /* 白色に設定 */
     text-shadow: 3px 3px 0 rgba(0, 0, 0, 1), /* 右下に強い黒い影 */
                  -1px -1px 0 rgba(0, 0, 0, 1), /* 左上に強い黒い影 */
@@ -65,4 +65,7 @@ h1 {
     margin:70px; /* 例として、全方向に40pxのマージンを設定 */
 }
 
+h4 {
+    font-size: 30px;
+}
 
