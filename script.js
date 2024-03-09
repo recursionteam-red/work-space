@@ -113,7 +113,7 @@ document.getElementById("target").appendChild(mainDiv);
 
 /////////////bgm管理//////////////////////////////
 
-ページが完全に読み込まれた後に実行
+//ページが完全に読み込まれた後に実行
 document.addEventListener('DOMContentLoaded', function() {
     // 全てのaudio要素の音量を設定
     const audios = document.querySelectorAll('audio');
@@ -431,20 +431,6 @@ function isColliding(field, minoShape, minoPosition, action) {
 
     // ここで衝突判定のロジックを実装
     // 衝突があればtrueを返し、なければfalseを返す
-
-    //現在の状態と未来の比較
-        //ブロックが一個でもあったらダメにするか
-        //回すときにちょっとでも当たったらダメにするか
-
-        //回るときに壁があったらアウト
-        //下に接触したらどうするか
-            //回転の制限
-                    //4段階が正規で通らなくてもセーフとする
-                    //2段階以上ある場合は回転し放題
-
-                    //回転の終わりのお知らせは0.5秒以上回転コマンドを操作しなかった場合
-    
-
 }
 
 
