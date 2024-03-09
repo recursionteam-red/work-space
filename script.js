@@ -371,6 +371,28 @@ class masterClass {
     }
 }
 
+// 初期落下位置のセーフティーチェック
+function canPlaceMino(field, minoShape, initialPosition) {
+    for (let y = 0; y < minoShape.length; y++) {
+        for (let x = 0; x < minoShape[y].length; x++) {
+            if (minoShape[y][x] !== 0) {
+                let fieldY = initialPosition.y + y;
+                let fieldX = initialPosition.x + x;
+                
+                // フィールドの範囲の下以外の場合以外チェック
+                if (fieldX < 0 || fieldX >= field.width ||  fieldY >= field.height) {
+                    return false; // フィールドの範囲外なので、配置不可
+                }
+                
+                // 既に配置されているミノとの衝突をチェック
+                if (field.grid[fieldY][fieldX].value !== 0) {
+                    return false; // 他のミノと衝突するので、配置不可
+                }
+            }
+        }
+    }
+    return true; // すべて確認して問題ないので、配置可能
+}
 
 
 function minoOperate(minoPosition, action) {
