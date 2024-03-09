@@ -109,11 +109,11 @@ show.appendChild(paramDiv);
 
 document.getElementById("target").appendChild(mainDiv);
 
-//htmlに挿入
+htmlに挿入
 
-///////////////bgm管理//////////////////////////////
+/////////////bgm管理//////////////////////////////
 
-// ページが完全に読み込まれた後に実行
+ページが完全に読み込まれた後に実行
 document.addEventListener('DOMContentLoaded', function() {
     // 全てのaudio要素の音量を設定
     const audios = document.querySelectorAll('audio');
@@ -164,33 +164,6 @@ function togglePauseBgm() {
 
 ///////////////bgm管理/////////////////////////////
 
-//仮作成
-// キーボードイベントリスナーの設定（例：左右下回転移動）
-document.addEventListener('keydown', (event) => {
-    switch(event.key) {
-        case "ArrowLeft":
-            console.log("Left key pressed");
-            // ここに左移動のロジックを実装
-            break;
-        case "ArrowRight":
-            console.log("Right key pressed");
-            // ここに右移動のロジックを実装
-            break;
-        case "ArrowDown":
-            console.log("Down key pressed");
-            // ここに速い下移動のロジックを実装
-            break;
-        case "ArrowUp":
-            console.log("Up key pressed");
-            // ここに回転のロジックを実装
-            break;
-        case "None":
-            console.log("None key pressed");
-            // ここに下移動のロジックを実装
-            break;
-        // さらなるキー操作の処理...
-        }
-});
 /////////////////////////↑フロント↑////////////////////////////
 
 
@@ -334,7 +307,7 @@ class Mino {
     }
 };
 
-テストの実行
+//テストの実行
 const field = new Field(22, 12); // 22行12列のフィールドを作成
 const mino = new Mino(); // Minoインスタンスを作成
 const selectedMino = mino.getRandomShapeAndColor(); // ランダムにミノを選択
@@ -346,6 +319,51 @@ field.placeMino(selectedMino, { y: 1, x: 5 }); // ミノをフィールドに配
 // フィールドの状態を表示
 field.printField();
 
+//仮作成
+let minoInstance = new Mino(); // Minoクラスのインスタンスを作成
+let currentMinoProperties = minoInstance.getRandomShapeAndColor(); // メソッドを呼び出してプロパティを取得
+let newMinoPosition;
+
+キーボードイベントリスナーの設定（例：左右下回転移動）
+document.addEventListener('keydown', (event) => {
+    switch(event.key) {
+        case "ArrowLeft":
+            console.log("Left key pressed");
+            console.log(currentMinoProperties.centerPosition);
+            newMinoPosition = minoOperate(currentMinoProperties.centerPosition, "left");
+            console.log(newMinoPosition);
+            // ここに左移動のロジックを実装
+            // keyboad event listener
+            break;
+        case "ArrowRight":
+            console.log("Right key pressed");
+            console.log(currentMinoProperties.centerPosition);
+            newMinoPosition = minoOperate(currentMinoProperties.centerPosition, "right");
+            console.log(newMinoPosition);
+            // ここに右移動のロジックを実装
+            break;
+        case "ArrowDown":
+            console.log("Down key pressed");
+            // ここに速い下移動のロジックを実装
+            console.log(currentMinoProperties.centerPosition);
+            newMinoPosition = minoOperate(currentMinoProperties.centerPosition, "down");
+            console.log(newMinoPosition);
+            break;
+        case "ArrowUp":
+            console.log("Up key pressed");
+            // ここに回転のロジックを実装
+            console.log(currentMinoProperties.shape);
+            let newMinoShape = minoRotate(currentMinoProperties.shape);
+            console.log(newMinoShape);
+            currentMinoProperties.shape = newMinoShape;
+            break;
+        case "None":
+            console.log("None key pressed");
+            // ここに下移動のロジックを実装
+            break;
+        // さらなるキー操作の処理...
+        }
+});
 class masterClass {
 
     static embody(minoOperate, minoCrash, minoRotate, minoDelete, minoOrder, calScore){
@@ -379,6 +397,33 @@ function minoOperate(minoPosition, action) {
 //左右と落下
 
 function isColliding(field, minoShape, minoPosition, action) {
+    let newPosition = { ...minoPosition }; // オブジェクトの不変性を保持
+    let newShape = minoShape;
+
+    if (action === 'rotate') {
+        newShape = minoRotate(newShape); // 回転した新しい形状を取得
+    } else {
+        newPosition = minoOperate(newPosition, action); // 新しい位置を計算する関数（この関数の実装が必要）
+    }
+
+    // 更新された位置と形状で衝突チェック
+    for (let y = 0; y < newShape.length; y++) {
+        for (let x = 0; x < newShape[y].length; x++) {
+            if (newShape[y][x] !== 0) {
+                let fieldY = newPosition.y + y;
+                let fieldX = newPosition.x + x;
+
+                // フィールドの境界または他のミノとの衝突をチェック
+                if (fieldX < 0 || fieldX >= field.width || fieldY < 0 || fieldY >= field.height || (field.grid[fieldY] && field.grid[fieldY][fieldX].value !== 0)) {
+                    return true; // 衝突あり
+                }
+            }
+        }
+    }
+
+    // 衝突なし
+    return false;
+
     // field: プレイフィールドの二次元配列
     // minoShape: ミノの形状を表す二次元配列
     // minoPosition: ミノの現在位置（{x: _, y: _}のようなオブジェクト）
@@ -386,38 +431,24 @@ function isColliding(field, minoShape, minoPosition, action) {
 
     // ここで衝突判定のロジックを実装
     // 衝突があればtrueを返し、なければfalseを返す
+
+    //現在の状態と未来の比較
+        //ブロックが一個でもあったらダメにするか
+        //回すときにちょっとでも当たったらダメにするか
+
+        //回るときに壁があったらアウト
+        //下に接触したらどうするか
+            //回転の制限
+                    //4段階が正規で通らなくてもセーフとする
+                    //2段階以上ある場合は回転し放題
+
+                    //回転の終わりのお知らせは0.5秒以上回転コマンドを操作しなかった場合
     
 
 }
 
-document.addEventListener('keydown', function(event) {
-    let action;
-    switch (event.key) {
-        case 'ArrowLeft':
-            action = 'left';
-            break;
-        case 'ArrowRight':
-            action = 'right';
-            break;
-        case 'ArrowUp':
-            action = 'rotate';
-            break;
-        case 'ArrowDown':
-            action = 'down';
-            break;
-        // 他のキーに関する処理
-    }
 
-    if (action && !isColliding(field, minoShape, minoPosition, action)) {
-        // 衝突がなければミノの位置を更新する処理　　ここが実質operateF
-    }
-});
-
-
-function minoRotate(minoShape,action) {
-    if (action !== 'rotate') {
-        return;
-    }
+function minoRotate(minoShape) {
     let newMinoShape = [];
     // 二次元配列をコピーする
     for (let i = 0; i < minoShape.length; i++) {
@@ -485,7 +516,6 @@ function calScore(){
 
 
 //まだ今は必要という感じ
-const field = new Field(22, 12); // 22行12列のフィールドを作成
 // ランダムにミノを生成し，fieldに反映させる関数
 function generateMino(field) {
 
@@ -519,4 +549,27 @@ function generateMino(field) {
 generateMino(field); // ミノを生成しフィールドに配置
 field.printField(); // フィールドの状態をコンソールに表示（デバッグ用）
 
-            
+let minoShape = [
+    [0, 1, 0],
+    [1, 1, 1],
+    [0, 0, 0]
+];
+
+// ミノの初期位置を定義（フィールドの上部中央に配置）
+let minoPosition = {
+    x: 4, // X座標（フィールドの幅に応じて調整すること）
+    y: 0  // Y座標（フィールドの最上部からのスタートを意味する）
+};
+
+console.log("テスト1（衝突しない場合）: ", isColliding(field, minoShape, minoPosition, 'down') ? "衝突あり" : "衝突なし");
+
+// フィールドの底に衝突する場合のテスト
+let bottomPosition = { x: 4, y: 18 };
+console.log("テスト2（フィールドの底に衝突）: ", isColliding(field, minoShape, bottomPosition, 'down') ? "衝突あり" : "衝突なし");
+
+// 左の壁に衝突する場合のテスト
+let leftWallPosition = { x: 0, y: 0 };
+console.log("テスト3（左の壁に衝突）: ", isColliding(field, minoShape, leftWallPosition, 'left') ? "衝突あり" : "衝突なし");
+
+// 回転による衝突のテスト
+console.log("テスト4（回転による衝突）: ", isColliding(field, minoShape, minoPosition, 'rotate') ? "衝突あり" : "衝突なし");
