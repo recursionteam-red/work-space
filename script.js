@@ -324,7 +324,7 @@ let minoInstance = new Mino(); // Minoクラスのインスタンスを作成
 let currentMinoProperties = minoInstance.getRandomShapeAndColor(); // メソッドを呼び出してプロパティを取得
 let newMinoPosition;
 
-キーボードイベントリスナーの設定（例：左右下回転移動）
+//キーボードイベントリスナーの設定（例：左右下回転移動）
 document.addEventListener('keydown', (event) => {
     switch(event.key) {
         case "ArrowLeft":
