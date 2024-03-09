@@ -109,7 +109,7 @@ show.appendChild(paramDiv);
 
 document.getElementById("target").appendChild(mainDiv);
 
-htmlに挿入
+//htmlに挿入
 
 /////////////bgm管理//////////////////////////////
 
