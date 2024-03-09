@@ -111,9 +111,9 @@ document.getElementById("target").appendChild(mainDiv);
 
 //htmlに挿入
 
-///////////////bgm管理//////////////////////////////
+/////////////bgm管理//////////////////////////////
 
-// ページが完全に読み込まれた後に実行
+//ページが完全に読み込まれた後に実行
 document.addEventListener('DOMContentLoaded', function() {
     // 全てのaudio要素の音量を設定
     const audios = document.querySelectorAll('audio');
@@ -169,29 +169,57 @@ function togglePauseBgm() {
 
 ////////////////////////↓環境↓////////////////////////////////
 
-const field = [
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100],
-            [100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100] 
-]
+class Cell {
+    constructor(value = 0, isWall = false) {
+        this.value = value; // セルの値 (ミノの有無、種類を示す値や0)
+        this.isWall = isWall; // セルが壁かどうかのフラグ
+    }
+}
+
+class Field {
+    constructor(height, width) {
+        this.height = height;
+        this.width = width;
+        this.grid = this.initializeField();
+    }
+
+    initializeField() {
+        let field = Array.from({ length: this.height }, () =>
+            Array.from({ length: this.width }, (v, i) => 
+                new Cell(0, i === 0 || i === this.width - 1)
+            )
+        );
+        
+        // 最上行と最下行を壁に設定
+        field[0].forEach(cell => cell.isWall = true);
+        field[this.height - 1].forEach(cell => cell.isWall = true);
+        
+        return field;
+    }
+
+    // フィールドにミノを配置するメソッド
+    placeMino(mino, position) {
+        for (let y = 0; y < mino.shape.length; y++) {
+            for (let x = 0; x < mino.shape[y].length; x++) {
+                if (mino.shape[y][x] !== 0) {
+                    let fieldY = position.y + y;
+                    let fieldX = position.x + x;
+                    if (fieldY >= 0 && fieldY < this.height && fieldX >= 0 && fieldX < this.width) {
+                        this.grid[fieldY][fieldX].value = mino.shape[y][x]; // ミノの値で更新
+                        this.grid[fieldY][fieldX].isWall = false; // 壁ではない
+                    }
+                }
+            }
+        }
+    }
+
+    // フィールドの状態をコンソールに表示するメソッド（デバッグ用）
+    printField() {
+        this.grid.forEach(row => {
+            console.log(row.map(cell => cell.isWall ? 100 : cell.value).join(' '));
+        });
+    }
+}
 
 class Mino {
     constructor(shape, color, shapeColors) {
@@ -279,12 +307,24 @@ class Mino {
     }
 };
 
+//テストの実行
+const field = new Field(22, 12); // 22行12列のフィールドを作成
+const mino = new Mino(); // Minoインスタンスを作成
+const selectedMino = mino.getRandomShapeAndColor(); // ランダムにミノを選択
+
+// ミノをフィールドの初期位置に配置
+// 配置の前にminoのshapeやpositionを適切に設定する
+field.placeMino(selectedMino, { y: 1, x: 5 }); // ミノをフィールドに配置する例
+
+// フィールドの状態を表示
+field.printField();
+
 //仮作成
 let minoInstance = new Mino(); // Minoクラスのインスタンスを作成
 let currentMinoProperties = minoInstance.getRandomShapeAndColor(); // メソッドを呼び出してプロパティを取得
 let newMinoPosition;
 
-// キーボードイベントリスナーの設定（例：左右下回転移動）
+キーボードイベントリスナーの設定（例：左右下回転移動）
 document.addEventListener('keydown', (event) => {
     switch(event.key) {
         case "ArrowLeft":
@@ -357,6 +397,33 @@ function minoOperate(minoPosition, action) {
 //左右と落下
 
 function isColliding(field, minoShape, minoPosition, action) {
+    let newPosition = { ...minoPosition }; // オブジェクトの不変性を保持
+    let newShape = minoShape;
+
+    if (action === 'rotate') {
+        newShape = minoRotate(newShape); // 回転した新しい形状を取得
+    } else {
+        newPosition = minoOperate(newPosition, action); // 新しい位置を計算する関数（この関数の実装が必要）
+    }
+
+    // 更新された位置と形状で衝突チェック
+    for (let y = 0; y < newShape.length; y++) {
+        for (let x = 0; x < newShape[y].length; x++) {
+            if (newShape[y][x] !== 0) {
+                let fieldY = newPosition.y + y;
+                let fieldX = newPosition.x + x;
+
+                // フィールドの境界または他のミノとの衝突をチェック
+                if (fieldX < 0 || fieldX >= field.width || fieldY < 0 || fieldY >= field.height || (field.grid[fieldY] && field.grid[fieldY][fieldX].value !== 0)) {
+                    return true; // 衝突あり
+                }
+            }
+        }
+    }
+
+    // 衝突なし
+    return false;
+
     // field: プレイフィールドの二次元配列
     // minoShape: ミノの形状を表す二次元配列
     // minoPosition: ミノの現在位置（{x: _, y: _}のようなオブジェクト）
@@ -364,8 +431,6 @@ function isColliding(field, minoShape, minoPosition, action) {
 
     // ここで衝突判定のロジックを実装
     // 衝突があればtrueを返し、なければfalseを返す
-    
-
 }
 
 
@@ -436,7 +501,7 @@ function calScore(){
 }
 
 
-
+//まだ今は必要という感じ
 // ランダムにミノを生成し，fieldに反映させる関数
 function generateMino(field) {
 
@@ -454,15 +519,43 @@ function generateMino(field) {
     for (let y = 0; y < selectedMino.shape.length; y++) {
         for (let x = 0; x < selectedMino.shape[y].length; x++) {
             if (selectedMino.shape[y][x] === 1) {
-                // ミノのブロックがある場所にfieldを更新
-                field[startPosition.y + y + center.y][startPosition.x + x - center.x] = 1;
+                let fieldY = startPosition.y + y;
+                let fieldX = startPosition.x + x;
+                if (fieldY >= 0 && fieldY < field.height && fieldX >= 0 && fieldX < field.width) {
+                    // ここでCellオブジェクトの値を更新
+                    field.grid[fieldY][fieldX].value = selectedMino.color; // 色情報で更新
+                    field.grid[fieldY][fieldX].isWall = false; // これは壁ではない
+                }
             }
         }
     }
 }
 
 // 関数をテストする
-generateMino(field);
-console.log(field);
+generateMino(field); // ミノを生成しフィールドに配置
+field.printField(); // フィールドの状態をコンソールに表示（デバッグ用）
 
-            
+let minoShape = [
+    [0, 1, 0],
+    [1, 1, 1],
+    [0, 0, 0]
+];
+
+// ミノの初期位置を定義（フィールドの上部中央に配置）
+let minoPosition = {
+    x: 4, // X座標（フィールドの幅に応じて調整すること）
+    y: 0  // Y座標（フィールドの最上部からのスタートを意味する）
+};
+
+console.log("テスト1（衝突しない場合）: ", isColliding(field, minoShape, minoPosition, 'down') ? "衝突あり" : "衝突なし");
+
+// フィールドの底に衝突する場合のテスト
+let bottomPosition = { x: 4, y: 18 };
+console.log("テスト2（フィールドの底に衝突）: ", isColliding(field, minoShape, bottomPosition, 'down') ? "衝突あり" : "衝突なし");
+
+// 左の壁に衝突する場合のテスト
+let leftWallPosition = { x: 0, y: 0 };
+console.log("テスト3（左の壁に衝突）: ", isColliding(field, minoShape, leftWallPosition, 'left') ? "衝突あり" : "衝突なし");
+
+// 回転による衝突のテスト
+console.log("テスト4（回転による衝突）: ", isColliding(field, minoShape, minoPosition, 'rotate') ? "衝突あり" : "衝突なし");
