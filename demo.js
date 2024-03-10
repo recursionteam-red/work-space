@@ -313,12 +313,12 @@ class Mino {
 const mino = new Mino(); // Minoクラスのインスタンスを作成
 let currentMinoProperties = mino.getRandomShapeAndColor(); // メソッドを呼び出してプロパティを取得
 let newMinoPosition;
+let moved = false;
 
 //キーボードイベントリスナーの設定（例：左右下回転移動）
 document.addEventListener('keydown', (event) => {
-    let moved = false;
+    
     console.log(`Key pressed: ${event.key}`); // どのキーが押されたかをログに出力
-
     switch (event.key) {
         case "ArrowLeft":
             // 左に移動する処理
@@ -398,6 +398,7 @@ function updateField(field, currentMinoProperties) {
     console.log("形状変化");
     console.log(currentMinoProperties.shape);
     console.log("Field updated"); // フィールドが更新されたことをログに出力
+    moved = false;
 }
 
 function minoOperate(minoPosition, action) {
