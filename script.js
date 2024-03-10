@@ -172,9 +172,13 @@ function togglePauseBgm() {
 let isFalling = true; // ミノが落下中かどうかのフラグ
 
 const intervalId = setInterval(() => {
-  if (isDropped()) {
-    console.log('ミノが着地しました。ループを停止します。');
-    isFalling = false; // 落下フラグ
+    if (isDropped()) {
+        console.log('ミノが着地しました。ループを停止します。');
+        isFalling = false; // 落下フラグ
+        clearInterval(intervalId); // ループを停止
+    }
+}, 1000);
+
 
 class Cell {
     constructor(value = 0, isWall = false) {
@@ -386,8 +390,7 @@ function canPlaceMino(field, minoShape, initialPosition) {
                 let fieldY = initialPosition.y + y;
                 let fieldX = initialPosition.x + x;
                 
-                // フィールドの範囲の下以外の場合以外チェック
-                if (fieldX < 0 || fieldX >= field.width ||  fieldY >= field.height) {
+                if (fieldX < 0 || fieldX >= field.width || fieldY < 0 || fieldY >= field.height ) {
                     return false; // フィールドの範囲外なので、配置不可
                 }
                 
@@ -462,6 +465,17 @@ function isColliding(field, minoShape, minoPosition, action) {
     // 衝突があればtrueを返し、なければfalseを返す
 }
 
+// isColliding関数を用いて簡略化した関数
+function isDropped(field, currentMinoShape, currentPosition) {
+    // 'down'を使って、次にミノが移動した場合の位置をチェックします
+    let testPosition = { x: currentPosition.x, y: currentPosition.y + 1 };
+
+    if (isColliding(field, currentMinoShape, testPosition, 'down')) {
+        return true; // ミノは落下完了
+    } else {
+        return false; // ミノはまだ落下中
+    }
+}
 
 function minoRotate(minoShape) {
     let newMinoShape = [];
