@@ -309,8 +309,6 @@ class Mino {
     }
 };
 
-
-
 //generateMino関数のminoをここに移動
 const mino = new Mino(); // Minoクラスのインスタンスを作成
 let currentMinoProperties = mino.getRandomShapeAndColor(); // メソッドを呼び出してプロパティを取得
@@ -633,10 +631,5 @@ function generateMino(field,mino) {
     }
 }
 
-
-
-
-
-
 // ミノ生成関数の呼び出し
-generateMino(field);
+generateMino(field,mino);
