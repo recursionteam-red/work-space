@@ -561,7 +561,7 @@ let minoPosition = {
 
 // グローバルスコープでctxとfieldを宣言
 let ctx;
-let field; // グローバルスコープで field を宣言
+let field = new Field(22, 12);; // グローバルスコープで field を宣言
 
 // DOMContentLoaded イベントリスナー内で field インスタンスを初期化
 document.addEventListener('DOMContentLoaded', function() {
@@ -581,7 +581,6 @@ document.addEventListener('DOMContentLoaded', function() {
         generateMino(field);
     }
 });
-
 
 
 
