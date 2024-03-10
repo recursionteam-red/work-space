@@ -318,7 +318,9 @@ let newMinoPosition;
 
 //キーボードイベントリスナーの設定（例：左右下回転移動）
 document.addEventListener('keydown', (event) => {
-    let moved = false; // ミノが移動または回転したかどうかを追跡
+    let moved = false;
+    console.log(`Key pressed: ${event.key}`); // どのキーが押されたかをログに出力
+
     switch (event.key) {
         case "ArrowLeft":
             // 左に移動する処理
@@ -343,15 +345,18 @@ document.addEventListener('keydown', (event) => {
             break;
         case "ArrowUp":
             // 回転する処理
+            console.log("Attempting to rotate the mino"); 
             const rotatedShape = minoRotate(currentMinoProperties.shape);
             if (!isColliding(field, rotatedShape, currentMinoProperties.centerPosition)) {
                 currentMinoProperties.shape = rotatedShape;
                 moved = true;
+                console.log("Mino rotated successfully"); 
             }
             break;
     }
 
     if (moved) {
+        console.log("Mino moved or rotated"); 
         // ミノの移動や回転が行われた場合、フィールドを更新してキャンバスに反映
         updateField(field, currentMinoProperties);
         drawField(field);
@@ -365,7 +370,33 @@ class masterClass {
     }
 }
 
+// 現在のミノをフィールドからクリアする関数
+function clearMino(field, position, shape) {
+    for (let y = 0; y < shape.length; y++) {
+        for (let x = 0; x < shape[y].length; x++) {
+            if (shape[y][x] !== 0) {
+                let fieldY = position.y + y;
+                let fieldX = position.x + x;
+                // ミノが占めていたセルをデフォルト値にリセット
+                if (field.grid[fieldY] && field.grid[fieldY][fieldX]) {
+                    field.grid[fieldY][fieldX].value = 0;
+                    field.grid[fieldY][fieldX].color = 'white'; // またはフィールドのデフォルト背景色
+                }
+            }
+        }
+    }
+}
 
+// フィールドを更新する関数
+function updateField(field, currentMinoProperties) {
+    console.log("Updating field with new mino position and shape");
+    // 現在のミノをフィールドからクリア
+    clearMino(field, currentMinoProperties.centerPosition, currentMinoProperties.shape);
+    
+    // 新しい位置にミノを再配置
+    field.placeMino(currentMinoProperties.shape, currentMinoProperties.centerPosition, currentMinoProperties.color);
+    console.log("Field updated"); // フィールドが更新されたことをログに出力
+}
 
 function minoOperate(minoPosition, action) {
     // 仮作成
@@ -429,6 +460,7 @@ function isColliding(field, minoShape, minoPosition, action) {
 
 
 function minoRotate(minoShape) {
+    console.log("Original shape:", minoShape); // 回転前の形状をログに出力
     let newMinoShape = [];
     // 二次元配列をコピーする
     for (let i = 0; i < minoShape.length; i++) {
@@ -455,6 +487,7 @@ function minoRotate(minoShape) {
             [newMinoShape[i][j], newMinoShape[i][N - 1 - j]] = [newMinoShape[i][N - 1 - j], newMinoShape[i][j]];
         }
     }
+    console.log("Rotated shape:", newMinoShape);
     // 90度回転後のミノの形状を返す
     return newMinoShape; 
 }
@@ -537,6 +570,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // drawField関数を修正して、セルの色プロパティを使用
 function drawField(field) {
+    console.log("Redrawing field on canvas");
+
     const cellSize = 30;
     for (let y = 0; y < field.height; y++) {
         for (let x = 0; x < field.width; x++) {
@@ -545,6 +580,7 @@ function drawField(field) {
             ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
         }
     }
+    console.log("Canvas redrawn"); // キャンバスが再描画されたことをログに出力
 }
 
 function generateMino(field) {
