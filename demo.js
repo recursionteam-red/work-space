@@ -311,9 +311,9 @@ class Mino {
 
 
 
-//仮作成
-let minoInstance = new Mino(); // Minoクラスのインスタンスを作成
-let currentMinoProperties = minoInstance.getRandomShapeAndColor(); // メソッドを呼び出してプロパティを取得
+//generateMino関数のminoをここに移動
+const mino = new Mino(); // Minoクラスのインスタンスを作成
+let currentMinoProperties = mino.getRandomShapeAndColor(); // メソッドを呼び出してプロパティを取得
 let newMinoPosition;
 
 //キーボードイベントリスナーの設定（例：左右下回転移動）
@@ -584,7 +584,6 @@ function drawField(field) {
 }
 
 function generateMino(field) {
-    const mino = new Mino();
     const selectedMino = mino.getRandomShapeAndColor();
 
     // フィールドの幅から左右の壁を除外した実際に使用できる幅を計算
