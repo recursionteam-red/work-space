@@ -309,8 +309,6 @@ class Mino {
     }
 };
 
-
-
 //generateMino関数のminoをここに移動
 const mino = new Mino(); // Minoクラスのインスタンスを作成
 let currentMinoProperties = mino.getRandomShapeAndColor(); // メソッドを呼び出してプロパティを取得
@@ -457,7 +455,27 @@ function isColliding(field, minoShape, minoPosition, action) {
     // ここで衝突判定のロジックを実装
     // 衝突があればtrueを返し、なければfalseを返す
 }
-
+// 初期落下位置のセーフティーチェック
+function canPlaceMino(field, minoShape, initialPosition) {
+    for (let y = 0; y < minoShape.length; y++) {
+        for (let x = 0; x < minoShape[y].length; x++) {
+            if (minoShape[y][x] !== 0) {
+                let fieldY = initialPosition.y + y;
+                let fieldX = initialPosition.x + x;
+                
+                if (fieldX < 0 || fieldX >= field.width || fieldY < 0 || fieldY >= field.height ) {
+                    return false; // フィールドの範囲外なので、配置不可
+                }
+                
+                // 既に配置されているミノとの衝突をチェック
+                if (field.grid[fieldY][fieldX].value !== 0) {
+                    return false; // 他のミノと衝突するので、配置不可
+                }
+            }
+        }
+    }
+    return true; // すべて確認して問題ないので、配置可能
+}
 
 function minoRotate(minoShape) {
     console.log("Original shape:", minoShape); // 回転前の形状をログに出力
@@ -584,6 +602,7 @@ function drawField(field) {
 }
 
 function generateMino(field,mino) {
+    console.log("Generating a new mino");
     const selectedMino = mino.getRandomShapeAndColor();
 
     // フィールドの幅から左右の壁を除外した実際に使用できる幅を計算
@@ -598,17 +617,19 @@ function generateMino(field,mino) {
     // ミノの初期位置を設定
     const startPosition = { x: startPositionX, y: startPositionY };
 
-    // ミノをフィールドに配置
-    field.placeMino(selectedMino.shape, startPosition, selectedMino.color);
+    // フィールドにミノを配置できるかどうかをチェック
+    if(canPlaceMino(field, selectedMino.shape, startPosition)){
+        console.log("Mino can be placed")
+        // ミノをフィールドに配置
+        field.placeMino(selectedMino.shape, startPosition, selectedMino.color);
 
-    // フィールドを描画
-    drawField(field);
+        // フィールドを描画
+        drawField(field);
+    }
+    else{
+        console.log("Game Over");
+    }
 }
 
-
-
-
-
-
 // ミノ生成関数の呼び出し
-generateMino(field);
+generateMino(field,mino);
