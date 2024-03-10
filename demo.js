@@ -393,6 +393,10 @@ function updateField(field, currentMinoProperties) {
     
     // 新しい位置にミノを再配置
     field.placeMino(currentMinoProperties.shape, currentMinoProperties.centerPosition, currentMinoProperties.color);
+    console.log("位置変化");
+    console.log(currentMinoProperties.centerPosition);
+    console.log("形状変化");
+    console.log(currentMinoProperties.shape);
     console.log("Field updated"); // フィールドが更新されたことをログに出力
 }
 
@@ -632,3 +636,4 @@ function generateMino(field,mino) {
 
 // ミノ生成関数の呼び出し
 generateMino(field,mino);
+
