@@ -344,7 +344,6 @@ document.addEventListener('keydown', (event) => {
             newMinoPosition = minoOperate(currentMinoProperties.centerPosition, "left");
             console.log(newMinoPosition);
             // ここに左移動のロジックを実装
-            // keyboad event listener
             break;
         case "ArrowRight":
             console.log("Right key pressed");
@@ -368,11 +367,7 @@ document.addEventListener('keydown', (event) => {
             console.log(newMinoShape);
             currentMinoProperties.shape = newMinoShape;
             break;
-        case "None":
-            console.log("None key pressed");
-            // ここに下移動のロジックを実装
-            break;
-        // さらなるキー操作の処理...
+
         }
 });
 class masterClass {
@@ -406,7 +401,6 @@ function canPlaceMino(field, minoShape, initialPosition) {
 
 
 function minoOperate(minoPosition, action) {
-    // 仮作成
     // action: 'left', 'right', 'down', 'rotate'
     switch (action) {
         case 'left':
@@ -465,11 +459,15 @@ function isColliding(field, minoShape, minoPosition, action) {
     // 衝突があればtrueを返し、なければfalseを返す
 }
 
+function automaticDrop(currentPosition) {
+    // 自動落下
+    currentPosition.y += 1;
+}
+
 // isColliding関数を用いて簡略化した関数
 function isDropped(field, currentMinoShape, currentPosition) {
     // 'down'を使って、次にミノが移動した場合の位置をチェックします
-    let testPosition = { x: currentPosition.x, y: currentPosition.y + 1 };
-
+    let testPosition = { x: currentPosition.x, y: currentPosition.y};
     if (isColliding(field, currentMinoShape, testPosition, 'down')) {
         return true; // ミノは落下完了
     } else {
