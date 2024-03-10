@@ -583,7 +583,7 @@ function drawField(field) {
     console.log("Canvas redrawn"); // キャンバスが再描画されたことをログに出力
 }
 
-function generateMino(field) {
+function generateMino(field,mino) {
     const selectedMino = mino.getRandomShapeAndColor();
 
     // フィールドの幅から左右の壁を除外した実際に使用できる幅を計算
