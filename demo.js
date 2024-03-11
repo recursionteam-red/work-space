@@ -113,36 +113,6 @@ document.getElementById("target").appendChild(mainDiv);
 
 /////////////bgm管理//////////////////////////////
 
-//ページが完全に読み込まれた後に実行
-document.addEventListener('DOMContentLoaded', function() {
-    // 全てのaudio要素の音量を設定
-    const audios = document.querySelectorAll('audio');
-    audios.forEach(function(audio) {
-        audio.volume = 0.05; // 音量を0.05に設定
-    });
-
-    // メインBGMを再生してループさせる
-    const welcomeBgm = document.getElementById('welcomeBgm');
-    welcomeBgm.loop = true; // ループを有効化
-    welcomeBgm.play();
-
-    // スタートボタンを押した時の処理
-    document.getElementById('start-retry-button').addEventListener('click', function() {
-        playButtonSound(); // クリック音を再生
-        welcomeBgm.pause(); // スタート画面のBGMを一時停止
-        welcomeBgm.currentTime = 0; // BGMの再生位置を最初に戻す
-
-        const startBgm = document.getElementById('startBgm'); // プレイ用のBGM
-        startBgm.loop = true; // ループを有効化
-        startBgm.play(); // プレイ用のBGMを再生
-    });
-
-    // ポーズボタンを押した時の処理
-    document.getElementById('pause-restart-button').addEventListener('click', function() {
-        togglePauseBgm(); // BGMの一時停止/再開
-    });
-});
-
 // 任意のボタンを押した時の効果音を再生する関数
 function playButtonSound() {
     document.getElementById('buttonSound').play();
@@ -308,6 +278,56 @@ class Mino {
         };
     }
 };
+// グローバルスコープでctxとfieldを宣言
+let ctx;
+let field = new Field(22, 12); // グローバルスコープで field を宣言
+
+// DOMContentLoaded イベントリスナー内で field インスタンスを初期化
+//ページが完全に読み込まれた後に実行
+document.addEventListener('DOMContentLoaded', function() {
+    // 全てのaudio要素の音量を設定
+    const audios = document.querySelectorAll('audio');
+    audios.forEach(function(audio) {
+        audio.volume = 0.05; // 音量を0.05に設定
+    });
+
+    // メインBGMを再生してループさせる
+    const welcomeBgm = document.getElementById('welcomeBgm');
+    welcomeBgm.loop = true; // ループを有効化
+    welcomeBgm.play();
+
+    // スタートボタンを押した時の処理
+    document.getElementById('start-retry-button').addEventListener('click', function() {
+        playButtonSound(); // クリック音を再生
+        welcomeBgm.pause(); // スタート画面のBGMを一時停止
+        welcomeBgm.currentTime = 0; // BGMの再生位置を最初に戻す
+
+        const startBgm = document.getElementById('startBgm'); // プレイ用のBGM
+        startBgm.loop = true; // ループを有効化
+        startBgm.play(); // プレイ用のBGMを再生
+    });
+
+    // ポーズボタンを押した時の処理
+    document.getElementById('pause-restart-button').addEventListener('click', function() {
+        togglePauseBgm(); // BGMの一時停止/再開
+    });
+    const canvas = document.getElementById('play-canvas');
+    if (canvas) {
+        ctx = canvas.getContext('2d');
+        canvas.width = 360;
+        canvas.height = 660;
+
+        // Fieldインスタンスの初期化
+        field = new Field(22, 12);
+
+        // 初期フィールドの描画
+        drawField(field);
+
+        // ミノの生成とフィールドへの配置
+        generateMino(field,currentMinoProperties);
+    }
+});
+
 
 //generateMino関数のminoをここに移動
 const mino = new Mino(); // Minoクラスのインスタンスを作成
@@ -565,28 +585,6 @@ let minoPosition = {
     y: 0  // Y座標（フィールドの最上部からのスタートを意味する）
 };
 
-// グローバルスコープでctxとfieldを宣言
-let ctx;
-let field = new Field(22, 12); // グローバルスコープで field を宣言
-
-// DOMContentLoaded イベントリスナー内で field インスタンスを初期化
-document.addEventListener('DOMContentLoaded', function() {
-    const canvas = document.getElementById('play-canvas');
-    if (canvas) {
-        ctx = canvas.getContext('2d');
-        canvas.width = 360;
-        canvas.height = 660;
-
-        // Fieldインスタンスの初期化
-        field = new Field(22, 12);
-
-        // 初期フィールドの描画
-        drawField(field);
-
-        // ミノの生成とフィールドへの配置
-        generateMino(field,currentMinoProperties);
-    }
-});
 
 
 
