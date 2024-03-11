@@ -544,7 +544,7 @@ function minoRotate(minoShape) {
 //回転
 
 //消す行である1次元目のインデックスを返す
-function DeleteOneDimensional(){///////////////////////field渡せてない/////////////////////////////
+function DeleteOneDimensional(){
     //javascriptは配列は全て動的配列
     let deleteRowIndex = [];
 
