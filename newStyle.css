@@ -1,0 +1,211 @@
+body {
+  font-family: 'Bebas Neue', sans-serif;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  background: black;
+  color: rgb(46, 179, 96);
+}
+
+.main {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100vh;
+}
+
+
+.utilities {
+width: 40vw;
+padding: 1rem;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+}
+
+
+.title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 170px;
+  height:50px;
+  border-radius:180px;
+  left:calc(50% - 75px);
+  top:calc(50% - 25px);
+  background: linear-gradient(60deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82);
+  cursor:pointer;
+  line-height:12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.title:before {
+  content: '';
+  z-index: 1;
+  position: absolute;
+  width: 12%;
+  height: 10%;
+
+  filter: blur(10px);
+  opacity: 0.5;
+  background: linear-gradient(60deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82);
+}
+
+
+.title:after {
+  content:'TETRIS';
+  text-align:center;
+  line-height:40px;
+  font-size:18px;
+  color:rgba(235,235,235,1);
+  font-family:'Verdana';
+  font-weight:bold;
+  z-index:5;
+  display:block;
+  border-radius:180px;
+  width:95%;
+  height:85%;
+  top:10%;
+  left:4%;
+  background-color:rgb(19, 20, 22);
+}
+
+
+h3 {
+  font-size: 2rem;
+  padding: 0 2rem;
+  color: white;
+  letter-spacing: 4px;
+
+}
+
+button {
+  height: 50px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 1.5rem;
+  outline: none;
+  border: 3px solid white;
+  border-radius: 25px;
+  padding: 10px 30px;
+  margin: 2rem 0 1rem 0;
+  color: white;
+  letter-spacing: 2px;
+  font-weight: bold;
+  transition: 0.2s ease;
+}
+
+button:hover {
+  background: white;
+  color: black;
+  cursor: pointer;
+}
+
+.texts {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.disp {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.rules {
+  display: flex;
+  flex-direction: column;
+  justify-content:center;
+  align-items: center;
+}
+
+.rules h4 {
+  color: white;
+  margin: 5px 0;
+  font-size: 1.2rem;
+  letter-spacing: 3px;
+}
+
+/* game container */
+.container {
+  width: 40vw;
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items:center;
+  padding: 1rem;
+  background: black;
+  border: 3px solid #5073b8;
+  border-radius: 10px;
+  z-index : 1000;
+
+
+}
+.grid {
+  background-color: black;
+  border: 4px solid  rgb(46, 179, 96);
+  border-radius: 10px;
+  padding-top: 1rem;
+  height: 400px;
+  width: 200px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+
+.grid div {
+    height: 20px;
+    width: 20px;
+}
+
+.tetromino {
+  border-radius:5px;
+  box-shadow: inset 1px 1px 0px white,
+   0px 0px 10px white;
+  position: relative;
+}
+
+.tetromino:after {
+  position: absolute;
+  content: '';
+  height: 20px;
+  width: 20px;
+  top: 0;
+  left: 0;
+}
+
+
+.mini-grid {
+  width: 80px;
+  height: 80px;
+  padding: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: black;
+  border: 4px solid rgb(90, 200, 184);
+  border-radius: 5px;
+  color: white;
+  margin: 0 0 0 3rem;
+}
+
+.grid h3 {
+  text-align: center;
+  font-size: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+
+.mini-grid div {
+  height: 20px;
+  width: 20px;
+}
