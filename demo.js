@@ -279,12 +279,22 @@ class Mino {
     }
 };
 // グローバルスコープでctxとfieldを宣言
-let ctx;
-let field = new Field(22, 12); // グローバルスコープで field を宣言
 
+let ctx;
 // DOMContentLoaded イベントリスナー内で field インスタンスを初期化
 //ページが完全に読み込まれた後に実行
 document.addEventListener('DOMContentLoaded', function() {
+    ///////インスタンス作成//////
+
+
+    let field = new Field(22, 12);
+    const mino = new Mino(); // Minoクラスのインスタンスを作成
+    let currentMinoProperties = mino.getRandomShapeAndColor(); // メソッドを呼び出してプロパティを取得
+    let newMinoPosition;
+    let moved = false;
+
+
+    //////////////////////////
     // 全てのaudio要素の音量を設定
     const audios = document.querySelectorAll('audio');
     audios.forEach(function(audio) {
@@ -317,70 +327,66 @@ document.addEventListener('DOMContentLoaded', function() {
         canvas.width = 360;
         canvas.height = 660;
 
-        // Fieldインスタンスの初期化
-        field = new Field(22, 12);
+
 
         // 初期フィールドの描画
         drawField(field);
-
+        console.log()
         // ミノの生成とフィールドへの配置
         generateMino(field,currentMinoProperties);
     }
-});
-
-
-//generateMino関数のminoをここに移動
-const mino = new Mino(); // Minoクラスのインスタンスを作成
-let currentMinoProperties = mino.getRandomShapeAndColor(); // メソッドを呼び出してプロパティを取得
-let newMinoPosition;
-let moved = false;
-
-//キーボードイベントリスナーの設定（例：左右下回転移動）
-document.addEventListener('keydown', (event) => {
+    //キーボードイベントリスナーの設定（例：左右下回転移動）
+    document.addEventListener('keydown', (event) => {
     
-    console.log(`Key pressed: ${event.key}`); // どのキーが押されたかをログに出力
-    console.log("currentMinoProperties:", currentMinoProperties); // 現在のミノのプロパティをログに出力
-    switch (event.key) {
-        case "ArrowLeft":
-            // 左に移動する処理
-            if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x - 1, y: currentMinoProperties.centerPosition.y})) {
-                currentMinoProperties.centerPosition.x -= 1;
-                moved = true;
-            }
-            break;
-        case "ArrowRight":
-            // 右に移動する処理
-            if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x + 1, y: currentMinoProperties.centerPosition.y})) {
-                currentMinoProperties.centerPosition.x += 1;
-                moved = true;
-            }
-            break;
-        case "ArrowDown":
-            // 下に移動する処理
-            if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1})) {
-                currentMinoProperties.centerPosition.y += 1;
-                moved = true;
-            }
-            break;
-        case "ArrowUp":
-            // 回転する処理
-            console.log("Attempting to rotate the mino"); 
-            const rotatedShape = minoRotate(currentMinoProperties.shape);
-            if (!isColliding(field, rotatedShape, currentMinoProperties.centerPosition)) {
-                currentMinoProperties.shape = rotatedShape;
-                moved = true;
-                console.log("Mino rotated successfully"); 
-            }
-            break;
-    }
+        console.log(`Key pressed: ${event.key}`); // どのキーが押されたかをログに出力
+        console.log("currentMinoProperties:", currentMinoProperties); // 現在のミノのプロパティをログに出力
+        switch (event.key) {
+            case "ArrowLeft":
+               // 左に移動する処理
+                if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x - 1, y: currentMinoProperties.centerPosition.y})) {
+                    currentMinoProperties.centerPosition.x -= 1;
+                    moved = true;
+                }
+                break;
+            case "ArrowRight":
+                // 右に移動する処理
+                if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x + 1, y: currentMinoProperties.centerPosition.y})) {
+                   currentMinoProperties.centerPosition.x += 1;
+                    moved = true;
+                }
+                break;
+            case "ArrowDown":
+                // 下に移動する処理
+                if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1})) {
+                    currentMinoProperties.centerPosition.y += 1;
+                    moved = true;
+                }
+                break;
+            case "ArrowUp":
+                // 回転する処理
+                console.log("Attempting to rotate the mino");
+                const rotatedShape = minoRotate(currentMinoProperties.shape);
+                if (!isColliding(field, rotatedShape, currentMinoProperties.centerPosition)) {
+                    currentMinoProperties.shape = rotatedShape;
+                    moved = true;
+                    console.log("Mino rotated successfully"); 
+                }
+                break;
+        }
 
-    if (moved) {
-        console.log("Mino moved or rotated"); 
-        // ミノの移動や回転が行われた場合、フィールドを更新してキャンバスに反映
-        updateField(field, currentMinoProperties);
-        drawField(field);
-    }
+        if (moved) {
+            console.log("Mino moved or rotated"); 
+            // ミノの移動や回転が行われた場合、フィールドを更新してキャンバスに反映
+            updateField(field, currentMinoProperties);
+            drawField(field);
+        }
+    });
 });
+
+
+
+
+
 
 class masterClass {
 
@@ -538,7 +544,7 @@ function minoRotate(minoShape) {
 //回転
 
 //消す行である1次元目のインデックスを返す
-function DeleteOneDimensional(){
+function DeleteOneDimensional(){///////////////////////field渡せてない/////////////////////////////
     //javascriptは配列は全て動的配列
     let deleteRowIndex = [];
 
