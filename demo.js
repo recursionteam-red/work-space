@@ -319,6 +319,7 @@ let moved = false;
 document.addEventListener('keydown', (event) => {
     
     console.log(`Key pressed: ${event.key}`); // どのキーが押されたかをログに出力
+    console.log("currentMinoProperties:", currentMinoProperties); // 現在のミノのプロパティをログに出力
     switch (event.key) {
         case "ArrowLeft":
             // 左に移動する処理
@@ -566,7 +567,7 @@ let minoPosition = {
 
 // グローバルスコープでctxとfieldを宣言
 let ctx;
-let field = new Field(22, 12);; // グローバルスコープで field を宣言
+let field = new Field(22, 12); // グローバルスコープで field を宣言
 
 // DOMContentLoaded イベントリスナー内で field インスタンスを初期化
 document.addEventListener('DOMContentLoaded', function() {
@@ -583,7 +584,7 @@ document.addEventListener('DOMContentLoaded', function() {
         drawField(field);
 
         // ミノの生成とフィールドへの配置
-        generateMino(field);
+        generateMino(field,currentMinoProperties);
     }
 });
 
@@ -605,9 +606,12 @@ function drawField(field) {
     console.log("Canvas redrawn"); // キャンバスが再描画されたことをログに出力
 }
 
-function generateMino(field,mino) {
+function generateMino(field,currentMinoProperties) {
     console.log("Generating a new mino");
-    const selectedMino = mino.getRandomShapeAndColor();
+    console.log("generateMino:Current mino properties:", currentMinoProperties); // 現在のミノのプロパティをログに出力
+    const selectedMino = currentMinoProperties;
+    console.log("Selected mino:", selectedMino); // 選択されたミノのプロパティをログに出力
+    
 
     // フィールドの幅から左右の壁を除外した実際に使用できる幅を計算
     const playableWidth = field.width - 2; // 左端と右端の壁の幅を除外
@@ -629,12 +633,11 @@ function generateMino(field,mino) {
 
         // フィールドを描画
         drawField(field);
+        console.log("Field drawn with new mino");
     }
     else{
         console.log("Game Over");
     }
 }
 
-// ミノ生成関数の呼び出し
-generateMino(field,mino);
 
