@@ -416,15 +416,18 @@ function clearMino(field, position, shape) {
 function updateField(field, currentMinoProperties) {
     console.log("Updating field with new mino position and shape");
     // 現在のミノをフィールドからクリア
+    console.log("くりあまえ", field);
     clearMino(field, currentMinoProperties.centerPosition, currentMinoProperties.shape);
+    console.log("くりあ後、placeminoの前", field);
     
     // 新しい位置にミノを再配置
     field.placeMino(currentMinoProperties.shape, currentMinoProperties.centerPosition, currentMinoProperties.color);
-    console.log("位置変化");
-    console.log(currentMinoProperties.centerPosition);
-    console.log("形状変化");
-    console.log(currentMinoProperties.shape);
-    console.log("Field updated"); // フィールドが更新されたことをログに出力
+    console.log("placeminoを読んだ後", field);
+    // console.log("位置変化");
+    // console.log(currentMinoProperties.centerPosition);
+    // console.log("形状変化");
+    // console.log(currentMinoProperties.shape);
+    // console.log("Field updated"); // フィールドが更新されたことをログに出力
     moved = false;
 }
 
