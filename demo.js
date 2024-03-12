@@ -333,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
         drawField(field);
         console.log()
         // ミノの生成とフィールドへの配置
-        generateMino(field,currentMinoProperties);
+        currentMinoProperties.centerPosition = generateMino(field,currentMinoProperties);
     }
     //キーボードイベントリスナーの設定（例：左右下回転移動）
     document.addEventListener('keydown', (event) => {
@@ -416,13 +416,13 @@ function clearMino(field, position, shape) {
 function updateField(field, currentMinoProperties) {
     console.log("Updating field with new mino position and shape");
     // 現在のミノをフィールドからクリア
-    console.log("くりあまえ", field);
+    console.log("クリア前", field);
     clearMino(field, currentMinoProperties.centerPosition, currentMinoProperties.shape);
-    console.log("くりあ後、placeminoの前", field);
+    console.log("クリア後、placeminoの前", field);
     
     // 新しい位置にミノを再配置
     field.placeMino(currentMinoProperties.shape, currentMinoProperties.centerPosition, currentMinoProperties.color);
-    console.log("placeminoを読んだ後", field);
+    console.log("placeminoを読んだ後", field);
     // console.log("位置変化");
     // console.log(currentMinoProperties.centerPosition);
     // console.log("形状変化");
@@ -581,23 +581,6 @@ function calScore(){
 }
 
 
-
-let minoShape = [
-    [0, 1, 0],
-    [1, 1, 1],
-    [0, 0, 0]
-];
-
-// ミノの初期位置を定義（フィールドの上部中央に配置）
-let minoPosition = {
-    x: 4, // X座標（フィールドの幅に応じて調整すること）
-    y: 0  // Y座標（フィールドの最上部からのスタートを意味する）
-};
-
-
-
-
-
 // drawField関数を修正して、セルの色プロパティを使用
 function drawField(field) {
     console.log("Redrawing field on canvas");
@@ -624,23 +607,25 @@ function generateMino(field,currentMinoProperties) {
     const playableWidth = field.width - 2; // 左端と右端の壁の幅を除外
 
     // ミノの初期位置のX座標を壁を考慮して計算
-    const startPositionX = 1 + Math.floor((playableWidth - selectedMino.shape[0].length) / 2);
+    let startPositionX = 1 + Math.floor((playableWidth - selectedMino.shape[0].length) / 2);
 
     // ミノがフィールドの壁にめり込まないようにY座標を1に設定
-    const startPositionY = 1;
+    let startPositionY = 1;
 
     // ミノの初期位置を設定
-    const startPosition = { x: startPositionX, y: startPositionY };
+    let startPosition = { x: startPositionX, y: startPositionY };
 
     // フィールドにミノを配置できるかどうかをチェック
     if(canPlaceMino(field, selectedMino.shape, startPosition)){
         console.log("Mino can be placed")
         // ミノをフィールドに配置
         field.placeMino(selectedMino.shape, startPosition, selectedMino.color);
+        
 
         // フィールドを描画
         drawField(field);
         console.log("Field drawn with new mino");
+        return startPosition;
     }
     else{
         console.log("Game Over");
