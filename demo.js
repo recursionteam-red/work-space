@@ -333,6 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
         drawField(field);
         console.log()
         // ミノの生成とフィールドへの配置
+        generateMino(field,currentMinoProperties);
     }
     //キーボードイベントリスナーの設定（例：左右下回転移動）
     document.addEventListener('keydown', (event) => {
