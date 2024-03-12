@@ -343,21 +343,21 @@ document.addEventListener('DOMContentLoaded', function() {
         switch (event.key) {
             case "ArrowLeft":
                // 左に移動する処理
-                if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x - 1, y: currentMinoProperties.centerPosition.y})) {
+                if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x - 1, y: currentMinoProperties.centerPosition.y}), "ArrowRight") {
                     currentMinoProperties.centerPosition.x -= 1;
                     moved = true;
                 }
                 break;
             case "ArrowRight":
                 // 右に移動する処理
-                if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x + 1, y: currentMinoProperties.centerPosition.y})) {
+                if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x + 1, y: currentMinoProperties.centerPosition.y}), "ArrowRight") {
                    currentMinoProperties.centerPosition.x += 1;
                     moved = true;
                 }
                 break;
             case "ArrowDown":
                 // 下に移動する処理
-                if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1})) {
+                if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}), "ArrowDown") {
                     currentMinoProperties.centerPosition.y += 1;
                     moved = true;
                 }
@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 回転する処理
                 console.log("Attempting to rotate the mino");
                 const rotatedShape = minoRotate(currentMinoProperties.shape);
-                if (!isColliding(field, rotatedShape, currentMinoProperties.centerPosition)) {
+                if (!isColliding(field, rotatedShape, currentMinoProperties.centerPosition, "ArrowUp")) {
                     currentMinoProperties.shape = rotatedShape;
                     moved = true;
                     console.log("Mino rotated successfully"); 
@@ -432,16 +432,16 @@ function minoOperate(minoPosition, action) {
     // 仮作成
     // action: 'left', 'right', 'down', 'rotate'
     switch (action) {
-        case 'left':
+        case 'Arrowleft':
             minoPosition.x -= 1;
             break;
-        case 'right':
+        case 'ArrowRight':
             minoPosition.x += 1;
             break;
-        case 'down':
+        case 'ArrowDown':
             minoPosition.y += 1;
             break;
-        case 'rotate':
+        case 'ArrowUp':
             break;
         default:
             break; 
