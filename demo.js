@@ -256,8 +256,16 @@ class Mino {
             // 他の形状と色のマッピングもここに追加できる
         };
 
-        // 移動座標
-        this.centerPositions = {x: 0, y: 0};
+        // 中心座標を設定する辞書
+        this.centerPositions = {
+            I: {y: 1, x: 2},
+            O: {y: 0, x: 0},
+            T: {y: 1, x: 1},
+            S: {y: 0, x: 1},
+            Z: {y: 0, x: 1},
+            J: {y: 1, x: 1},
+            L: {y: 1, x: 1},
+        };
     }
     getRandomShapeAndColor() {
         const keys = Object.keys(this.shapes);
@@ -266,7 +274,7 @@ class Mino {
         return {
             shape: this.shapes[randomKey],
             color: this.colors[colorName],
-            centerPosition: this.centerPositions
+            centerPosition: this.centerPositions[randomKey]
         };
     }
 };
@@ -335,35 +343,29 @@ document.addEventListener('DOMContentLoaded', function() {
         switch (event.key) {
             case "ArrowLeft":
                // 左に移動する処理
-                if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x - 1, y: currentMinoProperties.centerPosition.y})) {
-                    currentMinoProperties.centerPosition.x -= 1;
-                    moved = true;
-                }
+                currentMinoProperties.centerPosition.x -= 1;
+                moved = true;
                 break;
             case "ArrowRight":
                 // 右に移動する処理
-                if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x + 1, y: currentMinoProperties.centerPosition.y})) {
-                   currentMinoProperties.centerPosition.x += 1;
-                    moved = true;
-                }
+                currentMinoProperties.centerPosition.x += 1;
+                moved = true;
                 break;
             case "ArrowDown":
                 // 下に移動する処理
-                if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1})) {
-                    currentMinoProperties.centerPosition.y += 1;
-                    moved = true;
-                }
+                currentMinoProperties.centerPosition.y += 1;
+                moved = true;
                 break;
+            /*
             case "ArrowUp":
                 // 回転する処理
                 console.log("Attempting to rotate the mino");
                 const rotatedShape = minoRotate(currentMinoProperties.shape);
-                if (!isColliding(field, rotatedShape, currentMinoProperties.centerPosition)) {
-                    currentMinoProperties.shape = rotatedShape;
-                    moved = true;
-                    console.log("Mino rotated successfully"); 
-                }
+                currentMinoProperties.shape = rotatedShape;
+                moved = true;
+                console.log("Mino rotated successfully");
                 break;
+            */
         }
 
         if (moved) {
@@ -373,6 +375,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateField(field, currentMinoProperties);
             console.log("PostField:", field);
             drawField(field);
+            console.log("Drawn field:", field);
             moved = false;
             currentMinoProperties.centerPosition = {x: 0, y: 0};
         }
