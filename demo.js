@@ -256,16 +256,8 @@ class Mino {
             // 他の形状と色のマッピングもここに追加できる
         };
 
-        // 中心座標を設定する辞書
-        this.centerPositions = {
-            I: {y: 1, x: 2},
-            O: {y: 0, x: 0},
-            T: {y: 1, x: 1},
-            S: {y: 0, x: 1},
-            Z: {y: 0, x: 1},
-            J: {y: 1, x: 1},
-            L: {y: 1, x: 1},
-        };
+        // 移動座標
+        this.centerPositions = {x: 0, y: 0};
     }
     getRandomShapeAndColor() {
         const keys = Object.keys(this.shapes);
@@ -274,7 +266,7 @@ class Mino {
         return {
             shape: this.shapes[randomKey],
             color: this.colors[colorName],
-            centerPosition: this.centerPositions[randomKey]
+            centerPosition: this.centerPositions
         };
     }
 };
@@ -377,8 +369,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (moved) {
             console.log("Mino moved or rotated"); 
             // ミノの移動や回転が行われた場合、フィールドを更新してキャンバスに反映
+            console.log("PreField:", field);
             updateField(field, currentMinoProperties);
+            console.log("PostField:", field);
             drawField(field);
+            moved = false;
+            currentMinoProperties.centerPosition = {x: 0, y: 0};
         }
     });
 });
@@ -457,10 +453,11 @@ function isColliding(field, minoShape, minoPosition, action) {
 
     if (action === 'rotate') {
         newShape = minoRotate(newShape); // 回転した新しい形状を取得
+        console.log("ColitionCheck-New shape:", newShape); // 更新された形状をログに出力
     } else {
         newPosition = minoOperate(newPosition, action); // 新しい位置を計算する関数（この関数の実装が必要）
+        console.log("ColitionCheck-New position:", newPosition); // 更新された位置をログに出力
     }
-
     // 更新された位置と形状で衝突チェック
     for (let y = 0; y < newShape.length; y++) {
         for (let x = 0; x < newShape[y].length; x++) {
@@ -576,23 +573,6 @@ function calScore(){
     let DeleteCheckResultArray = DeleteOneDimensional();
     return DeleteCheckResultArray.length * 10;
 }
-
-
-
-let minoShape = [
-    [0, 1, 0],
-    [1, 1, 1],
-    [0, 0, 0]
-];
-
-// ミノの初期位置を定義（フィールドの上部中央に配置）
-let minoPosition = {
-    x: 4, // X座標（フィールドの幅に応じて調整すること）
-    y: 0  // Y座標（フィールドの最上部からのスタートを意味する）
-};
-
-
-
 
 
 // drawField関数を修正して、セルの色プロパティを使用
