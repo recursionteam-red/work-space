@@ -337,6 +337,10 @@ document.addEventListener('DOMContentLoaded', function() {
             case "ArrowLeft":
                // 左に移動する処理
                 if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x - 1, y: currentMinoProperties.centerPosition.y}), "ArrowRight") {
+                    previousMinoProperties = {
+                        ...currentMinoProperties,
+                        centerPosition: { ...currentMinoProperties.centerPosition }
+                    };
                     currentMinoProperties.centerPosition.x -= 1;
                     moved = true;
                 }
@@ -344,7 +348,11 @@ document.addEventListener('DOMContentLoaded', function() {
             case "ArrowRight":
                 // 右に移動する処理
                 if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x + 1, y: currentMinoProperties.centerPosition.y}), "ArrowRight") {
-                   currentMinoProperties.centerPosition.x += 1;
+                    previousMinoProperties = {
+                        ...currentMinoProperties,
+                        centerPosition: { ...currentMinoProperties.centerPosition }
+                    };
+                    currentMinoProperties.centerPosition.x += 1;
                     moved = true;
                 }
                 break;
