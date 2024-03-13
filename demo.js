@@ -273,6 +273,7 @@ class Mino {
 // グローバルスコープでctxとfieldを宣言
 
 let ctx;
+let previousMinoProperties;
 // DOMContentLoaded イベントリスナー内で field インスタンスを初期化
 //ページが完全に読み込まれた後に実行
 document.addEventListener('DOMContentLoaded', function() {
@@ -350,6 +351,10 @@ document.addEventListener('DOMContentLoaded', function() {
             case "ArrowDown":
                 // 下に移動する処理
                 if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}), "ArrowDown") {
+                    previousMinoProperties = {
+                        ...currentMinoProperties,
+                        centerPosition: { ...currentMinoProperties.centerPosition }
+                    };
                     currentMinoProperties.centerPosition.y += 1;
                     moved = true;
                 }
@@ -369,7 +374,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (moved) {
             console.log("Mino moved or rotated"); 
             // ミノの移動や回転が行われた場合、フィールドを更新してキャンバスに反映
-            updateField(field, currentMinoProperties);
+            updateField(field, currentMinoProperties, previousMinoProperties);
             drawField(field);
         }
     });
@@ -377,12 +382,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // 現在のミノをフィールドからクリアする関数
-function clearMino(field, position, shape) {
+function clearMino(field, position, shape, previousPosition) {
     for (let y = 0; y < shape.length; y++) {
         for (let x = 0; x < shape[y].length; x++) {
             if (shape[y][x] !== 0) {
-                let fieldY = position.y + y;
-                let fieldX = position.x + x;
+                let fieldY = previousPosition.y + y;
+                let fieldX = previousPosition.x + x;
                 // ミノが占めていたセルをデフォルト値にリセット
                 if (field.grid[fieldY] && field.grid[fieldY][fieldX]) {
                     field.grid[fieldY][fieldX].value = 0;
@@ -394,11 +399,11 @@ function clearMino(field, position, shape) {
 }
 
 // フィールドを更新する関数
-function updateField(field, currentMinoProperties) {
+function updateField(field, currentMinoProperties, previousPosition) {
     console.log("Updating field with new mino position and shape");
     // 現在のミノをフィールドからクリア
     console.log("クリア前", field);
-    clearMino(field, currentMinoProperties.centerPosition, currentMinoProperties.shape);
+    clearMino(field, currentMinoProperties.centerPosition, currentMinoProperties.shape, previousPosition.centerPosition);
     console.log("クリア後、placeminoの前", field);
     
     // 新しい位置にミノを再配置
