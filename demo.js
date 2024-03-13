@@ -257,15 +257,7 @@ class Mino {
         };
 
         // 中心座標を設定する辞書
-        this.centerPositions = {
-            I: {y: 1, x: 2},
-            O: {y: 0, x: 0},
-            T: {y: 1, x: 1},
-            S: {y: 0, x: 1},
-            Z: {y: 0, x: 1},
-            J: {y: 1, x: 1},
-            L: {y: 1, x: 1},
-        };
+        this.centerPositions = {x: 0, y: 0}; 
     }
     getRandomShapeAndColor() {
         const keys = Object.keys(this.shapes);
@@ -274,7 +266,7 @@ class Mino {
         return {
             shape: this.shapes[randomKey],
             color: this.colors[colorName],
-            centerPosition: this.centerPositions[randomKey]
+            centerPosition: this.centerPositions
         };
     }
 };
@@ -383,17 +375,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-
-
-
-
-
-class masterClass {
-
-    static embody(minoOperate, minoCrash, minoRotate, minoDelete, minoOrder, calScore){
-        // 関数の内容
-    }
-}
 
 // 現在のミノをフィールドからクリアする関数
 function clearMino(field, position, shape) {
