@@ -514,6 +514,7 @@ function isColliding(field, minoShape, minoPosition, action) {
                 if (fieldX < 0 || fieldX >= field.width || fieldY < 0 || fieldY >= field.height || (field.grid[fieldY] && field.grid[fieldY][fieldX].value !== 0)) {
                     return true; // 衝突あり
                 }
+
             }
         }
     }
@@ -623,12 +624,19 @@ function calScore(){
 // drawField関数を修正して、セルの色プロパティを使用
 function drawField(field) {
     console.log("Redrawing field on canvas");
+    console.log("Field to draw:", field); // 描画するフィールドをログに出力
 
     const cellSize = 30;
     for (let y = 0; y < field.height; y++) {
         for (let x = 0; x < field.width; x++) {
             const cell = field.grid[y][x];
+            if(cell.isWall){
+                cell.color = "black";
+                cell.value = 100;
+            }
             ctx.fillStyle = cell.isWall ? 'black' : cell.color; // セルの色を使用
+
+            
             ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
         }
     }
