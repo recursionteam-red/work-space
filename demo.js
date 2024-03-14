@@ -371,12 +371,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
             case "ArrowUp":
                 // 回転する処理
-                console.log("Attempting to rotate the mino");
-                console.log("回す前",currentMinoProperties.shape);
-                previousMinoProperties = {
-                    ...currentMinoProperties,
-                    shape: JSON.parse(JSON.stringify(currentMinoProperties.shape))
-                };
+                if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}), "ArrowUp") {
+                    console.log("Attempting to rotate the mino");
+                    console.log("回す前",currentMinoProperties.shape);
+                    previousMinoProperties = {
+                        ...currentMinoProperties,
+                        shape: JSON.parse(JSON.stringify(currentMinoProperties.shape))
+                    };
+                }
                     const rotatedShape = minoRotate(currentMinoProperties.shape);
                     console.log("回した後", rotatedShape);
                     currentMinoProperties.shape = rotatedShape;
