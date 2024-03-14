@@ -372,13 +372,17 @@ document.addEventListener('DOMContentLoaded', function() {
             case "ArrowUp":
                 // 回転する処理
                 console.log("Attempting to rotate the mino");
-                const rotatedShape = minoRotate(currentMinoProperties.shape);
-                if (!isColliding(field, rotatedShape, currentMinoProperties.centerPosition, "ArrowUp")) {
+                console.log("回す前",currentMinoProperties.shape);
+                previousMinoProperties = {
+                    ...currentMinoProperties,
+                    shape: JSON.parse(JSON.stringify(currentMinoProperties.shape))
+                };
+                    const rotatedShape = minoRotate(currentMinoProperties.shape);
+                    console.log("回した後", rotatedShape);
                     currentMinoProperties.shape = rotatedShape;
+                    console.log("いれたあと", currentMinoProperties.shape);
                     moved = true;
                     console.log("Mino rotated successfully"); 
-                }
-                break;
         }
 
         if (moved) {
@@ -453,7 +457,7 @@ function updateField(field, currentMinoProperties, previousPosition) {
     console.log("Updating field with new mino position and shape");
     // 現在のミノをフィールドからクリア
     console.log("クリア前", field);
-    clearMino(field, currentMinoProperties.shape, previousPosition.centerPosition);
+    clearMino(field, previousPosition.shape, previousPosition.centerPosition);
     console.log("クリア後、placeminoの前", field);
     
     // 新しい位置にミノを再配置
