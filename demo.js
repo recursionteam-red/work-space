@@ -274,6 +274,7 @@ class Mino {
 
 let ctx;
 let previousMinoProperties;
+let intervalId = null;
 // DOMContentLoaded イベントリスナー内で field インスタンスを初期化
 //ページが完全に読み込まれた後に実行
 document.addEventListener('DOMContentLoaded', function() {
@@ -285,7 +286,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentMinoProperties = mino.getRandomShapeAndColor(); // メソッドを呼び出してプロパティを取得
     let newMinoPosition;
     let moved = false;
-
 
     //////////////////////////
     // 全てのaudio要素の音量を設定
@@ -299,6 +299,19 @@ document.addEventListener('DOMContentLoaded', function() {
     welcomeBgm.loop = true; // ループを有効化
     welcomeBgm.play();
 
+    const canvas = document.getElementById('play-canvas');
+    if (canvas) {
+        ctx = canvas.getContext('2d');
+        canvas.width = 360;
+        canvas.height = 660;
+
+        // 初期フィールドの描画
+        drawField(field);
+        console.log()
+        // ミノの生成とフィールドへの配置
+        currentMinoProperties.centerPosition = generateMino(field,currentMinoProperties);
+    }
+
     // スタートボタンを押した時の処理
     document.getElementById('start-retry-button').addEventListener('click', function() {
         playButtonSound(); // クリック音を再生
@@ -308,26 +321,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const startBgm = document.getElementById('startBgm'); // プレイ用のBGM
         startBgm.loop = true; // ループを有効化
         startBgm.play(); // プレイ用のBGMを再生
+        startAutoDown(); // 1秒ごとに落下
     });
 
     // ポーズボタンを押した時の処理
     document.getElementById('pause-restart-button').addEventListener('click', function() {
         togglePauseBgm(); // BGMの一時停止/再開
+        stopAutoDown(); // 落下を一時停止
     });
-    const canvas = document.getElementById('play-canvas');
-    if (canvas) {
-        ctx = canvas.getContext('2d');
-        canvas.width = 360;
-        canvas.height = 660;
 
-
-
-        // 初期フィールドの描画
-        drawField(field);
-        console.log()
-        // ミノの生成とフィールドへの配置
-        currentMinoProperties.centerPosition = generateMino(field,currentMinoProperties);
-    }
     //キーボードイベントリスナーの設定（例：左右下回転移動）
     document.addEventListener('keydown', (event) => {
     
@@ -386,11 +388,51 @@ document.addEventListener('DOMContentLoaded', function() {
             drawField(field);
         }
     });
+
+    function moveMinoDown() {
+        if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}), "ArrowDown") {
+            previousMinoProperties = {
+                ...currentMinoProperties,
+                centerPosition: { ...currentMinoProperties.centerPosition }
+            };
+            currentMinoProperties.centerPosition.y += 1;
+            moved = true;
+        } else {
+            // 衝突時の処理（例: 新しいミノの生成）
+            // currentMinoProperties = mino.getRandomShapeAndColor(); // メソッドを呼び出してプロパティを取得
+            // currentMinoProperties.centerPosition = generateMino(field,currentMinoProperties);
+        }
+    
+        if (moved) {
+            updateField(field, currentMinoProperties, previousMinoProperties);
+            drawField(field);
+            moved = false;
+        }
+    }
+    
+    function startAutoDown() {
+        // 既に動作しているタイマーをクリア
+        if (intervalId !== null) {
+            clearInterval(intervalId);
+        }
+        // 1秒ごとにログを表示し、ミノを下に移動させる
+        intervalId = setInterval(() => {
+            moveMinoDown();
+        }, 1000);
+    }
+    
+    function stopAutoDown() {
+        // タイマーをクリアしてログの表示を停止
+        if (intervalId !== null) {
+            clearInterval(intervalId);
+            intervalId = null; // intervalIdをリセット
+        }
+    }
 });
 
 
 // 現在のミノをフィールドからクリアする関数
-function clearMino(field, position, shape, previousPosition) {
+function clearMino(field, shape, previousPosition) {
     for (let y = 0; y < shape.length; y++) {
         for (let x = 0; x < shape[y].length; x++) {
             if (shape[y][x] !== 0) {
@@ -411,7 +453,7 @@ function updateField(field, currentMinoProperties, previousPosition) {
     console.log("Updating field with new mino position and shape");
     // 現在のミノをフィールドからクリア
     console.log("クリア前", field);
-    clearMino(field, currentMinoProperties.centerPosition, currentMinoProperties.shape, previousPosition.centerPosition);
+    clearMino(field, currentMinoProperties.shape, previousPosition.centerPosition);
     console.log("クリア後、placeminoの前", field);
     
     // 新しい位置にミノを再配置
@@ -447,6 +489,9 @@ function minoOperate(minoPosition, action) {
     return minoPosition;
 }
 //左右と落下
+
+
+
 
 function isColliding(field, minoShape, minoPosition, action) {
     let newPosition = { ...minoPosition }; // オブジェクトの不変性を保持
