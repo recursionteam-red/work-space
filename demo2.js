@@ -417,17 +417,30 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function moveMinoDown() {
-        if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}), "ArrowDown") {
+        if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}, "ArrowDown")) {
             previousMinoProperties = {
                 ...currentMinoProperties,
                 centerPosition: { ...currentMinoProperties.centerPosition }
             };
             currentMinoProperties.centerPosition.y += 1;
             moved = true;
+            console.log("movedownの中でiscollidingは衝突なしでした");
         } else {
-            // 衝突時の処理（例: 新しいミノの生成）
-            // currentMinoProperties = mino.getRandomShapeAndColor(); // メソッドを呼び出してプロパティを取得
-            // currentMinoProperties.centerPosition = generateMino(field,currentMinoProperties);
+            clearInterval(intervalId); // 自動落下を停止
+            intervalId = null;
+            // 新しいミノを生成
+            const mino1 = new Mino();
+            currentMinoProperties = mino1.getRandomShapeAndColor();
+            currentMinoProperties.centerPosition = generateMino(field,currentMinoProperties);
+            // 新しいミノの初期位置を設定
+            
+            if (!currentMinoProperties.centerPosition) {
+                console.log("Game Over");
+                // ゲームオーバー処理をここに記述
+                return; // これ以上の処理を停止
+            }
+            // 新しいミノでゲームを続けるために自動落下を再開
+            startAutoDown();
         }
     
         if (moved) {
@@ -686,7 +699,7 @@ function generateMino(field,currentMinoProperties) {
         return startPosition;
     }
     else{
-        console.log("Game Over");
+        console.log("genarateMIno Game Over");
     }
 }
 
