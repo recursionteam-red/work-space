@@ -584,37 +584,16 @@ function canPlaceMino(field, minoShape, initialPosition) {
 }
 
 function minoRotate(minoShape) {
-    console.log("Original shape:", minoShape); // 回転前の形状をログに出力
-    let newMinoShape = [];
-    // 二次元配列をコピーする
-    for (let i = 0; i < minoShape.length; i++) {
-        let row = [];
-        for (let j = 0; j < minoShape[i].length; j++) {
-            row.push(minoShape[i][j]);
-        }
-        newMinoShape.push(row);
-    }
-    // ここでnewMinoShapeを回転させる
-    // 転置する
-    const N = newMinoShape.length;
-    for (let i = 0; i < N; i++) {
-        for (let j = i; j < N; j++) {
-            // i == j の要素は転置不要。
-            if (i !== j) {
-                [newMinoShape[i][j], newMinoShape[j][i]] = [newMinoShape[j][i], newMinoShape[i][j]];
-            }
+    let newShape = [];
+    for (let y = 0; y < minoShape[0].length; y++) {
+        newShape[y] = [];
+        for (let x = 0; x < minoShape.length; x++) {
+            newShape[y][x] = minoShape[minoShape.length - 1 - x][y];
         }
     }
-    // 左右対称にする
-    for (let i = 0; i < N; i++) {
-        for (let j = 0; j < Math.floor(N / 2); j++) {
-            [newMinoShape[i][j], newMinoShape[i][N - 1 - j]] = [newMinoShape[i][N - 1 - j], newMinoShape[i][j]];
-        }
-    }
-    console.log("Rotated shape:", newMinoShape);
-    // 90度回転後のミノの形状を返す
-    return newMinoShape; 
+    return newShape;
 }
+
 //回転
 
 //消す行である1次元目のインデックスを返す
