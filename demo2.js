@@ -387,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
             case "ArrowDown":
                 // 下に移動する処理
-                if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}, "ArrowDown")) {
+                if (!collisionCheck(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}, "ArrowDown")) {
                     previousMinoProperties = {
                         ...currentMinoProperties,
                         centerPosition: { ...currentMinoProperties.centerPosition }
@@ -421,17 +421,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 
         }
 
-        if (moved) {
+        if (moved && event.key !== "ArrowDown") {
             console.log("Mino moved or rotated"); 
             // ミノの移動や回転が行われた場合、フィールドを更新してキャンバスに反映
             console.log("updateがよびだされるまえのX", currentMinoProperties.centerPosition.x);
             updateField(field, currentMinoProperties, previousMinoProperties);
             drawField(field);
         }
+        else if(moved && event.key === "ArrowDown"){
+            console.log("updateがよびだされるまえのX", currentMinoProperties.centerPosition.x);
+            updateField(field, currentMinoProperties, previousMinoProperties);
+            drawField(field);
+            if (collisionCheck(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}, "ArrowDown")){
+                clearInterval(intervalId); // 自動落下を停止
+                intervalId = null;
+                field.setOperatingMinoFalse();
+                minoDelete(field)
+                // 新しいミノを生成
+                const mino1 = new Mino();
+                currentMinoProperties = mino1.getRandomShapeAndColor();
+                currentMinoProperties.centerPosition = generateMino(field,currentMinoProperties);
+                // 新しいミノの初期位置を設定
+                
+                if (!canPlaceMino(field, currentMinoProperties.shape, currentMinoProperties.centerPosition)) {
+                    console.log("Game Over");
+                    // ゲームオーバー処理をここに記述
+                    return; // これ以上の処理を停止
+                }
+                // 新しいミノでゲームを続けるために自動落下を再開
+                startAutoDown();
+            }
+        
+        }
     });
 
     function moveMinoDown() {
-        if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}, "ArrowDown")) {
+        if (!collisionCheck(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}, "ArrowDown")) {
             previousMinoProperties = {
                 ...currentMinoProperties,
                 centerPosition: { ...currentMinoProperties.centerPosition }
@@ -450,7 +475,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currentMinoProperties.centerPosition = generateMino(field,currentMinoProperties);
             // 新しいミノの初期位置を設定
             
-            if (!currentMinoProperties.centerPosition) {
+            if (!canPlaceMino(field, currentMinoProperties.shape, currentMinoProperties.centerPosition)) {
                 console.log("Game Over");
                 // ゲームオーバー処理をここに記述
                 return; // これ以上の処理を停止
@@ -547,9 +572,35 @@ function minoOperate(minoPosition, action) {
 }
 //左右と落下
 
+// Arrowdownの操作で衝突があるかどうかをチェックする関数
+function collisionCheck(field, minoShape, minoPosition, action) {
+    
+    // 更新された位置と形状で衝突チェック
+    for (let y = 0; y < minoShape.length; y++) {
+        for (let x = 0; x < minoShape[y].length; x++) {
+            if (minoShape[y][x] !== 0) {
+                let fieldY = minoPosition.y + y;
+                let fieldX = minoPosition.x + x;
+                console.log(fieldY, "fieldY", fieldX, "fieldX");
+                // 下の壁との衝突をチェック
+                if(field.grid[fieldY][fieldX].isWall && field.grid[fieldY][fieldX].value === 200){
+                    console.log("壁との衝突があります");
+                    return true;
+                }
+                
+                if (field.grid[fieldY][fieldX].value !== 0 && !field.grid[fieldY][fieldX].operatingMino) {
+                    console.log("他のミノとの衝突があります");
+                    return true; // 他のミノとの衝突
+                }
+            }
+        }
+    }
+    
+    console.log("衝突がありません");
+    return false; // 衝突なし
+}
 
-
-
+// arrowDown以外の操作で衝突があるかどうかをチェックする関数
 function isColliding(field, minoShape, minoPosition, action) {
     let newShape = minoShape;
 
@@ -564,13 +615,12 @@ function isColliding(field, minoShape, minoPosition, action) {
                 let fieldY = minoPosition.y + y;
                 let fieldX = minoPosition.x + x;
                 console.log(fieldY, "fieldY", fieldX, "fieldX");
-                
-                // フィールドの境界または他のミノとの衝突をチェック
-                if (fieldX <= 0 || fieldX >= field.width - 1 || fieldY <= 0 || fieldY >= field.height - 1) {
-                    console.log("境界での衝突があります");
-                    return true; // 境界での衝突あり
+                if(field.grid[fieldY][fieldX].isWall && field.grid[fieldY][fieldX].value === 100){
+                    console.log("壁との衝突があります");
+                    return true;
                 }
                 
+
                 if (field.grid[fieldY][fieldX].value !== 0 && !field.grid[fieldY][fieldX].operatingMino) {
                     console.log("他のミノとの衝突があります");
                     return true; // 他のミノとの衝突
@@ -592,13 +642,14 @@ function canPlaceMino(field, minoShape, initialPosition) {
                 let fieldY = initialPosition.y + y;
                 let fieldX = initialPosition.x + x;
                 
-                if (fieldX < 0 || fieldX >= field.width || fieldY < 0 || fieldY >= field.height ) {
+                if (field.grid[fieldY][fieldX].isWall ) {
                     return false; // フィールドの範囲外なので、配置不可
                 }
                 
                 // 既に配置されているミノとの衝突をチェック
-                if (field.grid[fieldY][fieldX].value !== 0) {
-                    return false; // 他のミノと衝突するので、配置不可
+                if (field.grid[fieldY][fieldX].value !== 0 && !field.grid[fieldY][fieldX].operatingMino) {
+                    console.log("他のミノとの衝突があります");
+                    return false; // 他のミノとの衝突
                 }
             }
         }
@@ -666,9 +717,13 @@ function drawField(field) {
     for (let y = 0; y < field.height; y++) {
         for (let x = 0; x < field.width; x++) {
             const cell = field.grid[y][x];
-            if(cell.isWall){
+            if(cell.isWall && y < 20){
                 cell.color = "black";
                 cell.value = 100;
+            }
+            else if(cell.isWall && y >= 20){
+                cell.color = "black";
+                cell.value = 200;
             }
             ctx.fillStyle = cell.isWall ? 'black' : cell.color; // セルの色を使用
 
