@@ -701,6 +701,7 @@ function minoDelete(field) {
 
         // ここで削除された行数を更新
         let linesCleared = deleteRowIndex.length;
+        playLinedSound();
         updateScore(linesCleared); // 行が消去されたらスコアを更新
     }
 }
@@ -787,6 +788,15 @@ function generateMino(field,currentMinoProperties) {
     }
     else{
         console.log("genarateMIno Game Over");
+    }
+}
+
+// lined BGMを再生する関数
+function playLinedSound() {
+    const linedSound = document.getElementById('lined');
+    if (linedSound) {
+        linedSound.currentTime = 0; // BGMを最初から再生
+        linedSound.play();
     }
 }
 
