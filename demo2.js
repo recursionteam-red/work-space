@@ -543,41 +543,6 @@ document.addEventListener('DOMContentLoaded', function() {
             intervalId = null; // intervalIdをリセット
         }
     }
-
-    function showResultScreen() {
-        const resultScreen = document.createElement('div');
-        resultScreen.id = 'resultScreen';
-        resultScreen.style.position = 'fixed';
-        resultScreen.style.top = '0';
-        resultScreen.style.left = '0';
-        resultScreen.style.width = '100%';
-        resultScreen.style.height = '100%';
-        resultScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-        resultScreen.style.display = 'flex';
-        resultScreen.style.flexDirection = 'column';
-        resultScreen.style.justifyContent = 'center';
-        resultScreen.style.alignItems = 'center';
-        resultScreen.style.zIndex = '1000';
-
-        const scoreDisplay = document.createElement('h2');
-        scoreDisplay.innerText = 'Score: ' + currentScore;
-        scoreDisplay.style.color = 'white';
-
-        const retryButton = document.createElement('button');
-        retryButton.classList.add("btn","pixel-button");
-        const h2_3 = document.createElement("h2");
-        const gameText3 = document.createTextNode("Retry");
-        h2_3.appendChild(gameText3);
-        retryButton.appendChild(h2_3);
-        retryButton.onclick = function() {
-            location.reload(); // ページをリロードしてゲームをリスタート
-        };
-
-        resultScreen.appendChild(scoreDisplay);
-        resultScreen.appendChild(retryButton);
-
-        document.body.appendChild(resultScreen);
-    }
 });
 
 
@@ -883,3 +848,37 @@ function playLinedSound() {
 
 
 
+function showResultScreen() {
+    const resultScreen = document.createElement('div');
+    resultScreen.id = 'resultScreen';
+    resultScreen.style.position = 'fixed';
+    resultScreen.style.top = '0';
+    resultScreen.style.left = '0';
+    resultScreen.style.width = '100%';
+    resultScreen.style.height = '100%';
+    resultScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    resultScreen.style.display = 'flex';
+    resultScreen.style.flexDirection = 'column';
+    resultScreen.style.justifyContent = 'center';
+    resultScreen.style.alignItems = 'center';
+    resultScreen.style.zIndex = '1000';
+
+    const scoreDisplay = document.createElement('h2');
+    scoreDisplay.innerText = 'Score: ' + currentScore;
+    scoreDisplay.style.color = 'white';
+
+    const retryButton = document.createElement('button');
+    retryButton.classList.add("btn","pixel-button");
+    const h2_3 = document.createElement("h2");
+    const gameText3 = document.createTextNode("Retry");
+    h2_3.appendChild(gameText3);
+    retryButton.appendChild(h2_3);
+    retryButton.onclick = function() {
+        location.reload(); // ページをリロードしてゲームをリスタート
+    };
+
+    resultScreen.appendChild(scoreDisplay);
+    resultScreen.appendChild(retryButton);
+
+    document.body.appendChild(resultScreen);
+}
