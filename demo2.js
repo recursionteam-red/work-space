@@ -164,19 +164,20 @@ class Field {
         
         // 最上行と最下行を壁に設定
         field[0].forEach(cell => {
-            cell.value = 100; // セルの値を100に設定
-            cell.isWall = true; // isWallプロパティをtrueに設定
+            cell.value = 100;
+            cell.isWall = true;
+            cell.color = 'black'; // 壁の色を黒に設定
         });
         
-        // フィールドの最下行のセルを更新
         field[this.height - 1].forEach(cell => {
-            cell.value = 100; // セルの値を100に設定
-            cell.isWall = true; // isWallプロパティをtrueに設定
+            cell.value = 100;
+            cell.isWall = true;
+            cell.color = 'black'; // 壁の色を黒に設定
         });
         
         return field;
     }
-
+    
     // フィールドにミノを配置するメソッド
     placeMino(shape, position, color) {
         for (let y = 0; y < shape.length; y++) {
@@ -440,6 +441,7 @@ document.addEventListener('DOMContentLoaded', function() {
             clearInterval(intervalId); // 自動落下を停止
             intervalId = null;
             field.setOperatingMinoFalse();
+            minoDelete(field)
             // 新しいミノを生成
             const mino1 = new Mino();
             currentMinoProperties = mino1.getRandomShapeAndColor();
@@ -615,33 +617,36 @@ function minoRotate(minoShape) {
 
 //回転
 
-//消す行である1次元目のインデックスを返す
-function DeleteOneDimensional(){
-    //javascriptは配列は全て動的配列
+function minoDelete(field) {
+    // 削除すべき行のインデックスを格納する配列
     let deleteRowIndex = [];
 
-    for(let i = 0; i < field.length; i++){
-        arr = field[i];
-        for(let j = 1; j < arr.length - 1; j++){
-            if(arr[j] === 0) break;
-            if(j == arr.length -2 && arr[j] != 0) deleteRowIndex.push(i);
-            
+    // フィールドを走査して削除すべき行を特定
+    for (let i = 1; i < field.height - 1; i++) { // 最上段と最下段の壁は無視
+        let isFull = true; // その行が完全にミノで埋まっているかをチェックするフラグ
+        for (let j = 1; j < field.width - 1; j++) { // 左端と右端の壁は無視
+            if (field.grid[i][j].value === 0) {
+                isFull = false;
+                break; // 一つでも空のセルがあればその行は削除しない
+            }
+        }
+        if (isFull) {
+            deleteRowIndex.push(i); // 削除すべき行のインデックスを配列に追加
         }
     }
-    return deleteRowIndex;
-}
 
-//消して最上位に何もないフィールドを生成（残ったミノを1列おろす動作も入っている）
-function minoDelete(){
-
-    let DeleteCheckResultArray = DeleteOneDimensional();
-
-        for(i = 0; i < DeleteCheckResultArray.length; i++){
-            let DeleteRow = field.splice(DeleteCheckResultArray[i], 1);
-            field.unshift([100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100]);
+    // 削除すべき行があれば処理を実行
+    if (deleteRowIndex.length > 0) {
+        // 該当する行を削除し、新しい空行を上部に追加
+        for (let index of deleteRowIndex) {
+            field.grid.splice(index, 1); // 行を削除
+            // 新しい空行を作成し、インデックス1の位置に挿入
+            let newRow = Array.from({ length: field.width }, (v, i) => new Cell(i === 0 || i === field.width - 1 ? 100 : 0, i === 0 || i === field.width - 1));
+            field.grid.splice(1, 0, newRow); // 新しい行を挿入
         }
-        return field;
+    }
 }
+
 
 //1列ごとに10点
 function calScore(){
