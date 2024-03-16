@@ -882,6 +882,12 @@ function showResultScreen() {
 
     resultScreen.appendChild(scoreDisplay);
     resultScreen.appendChild(retryButton);
-
     document.body.appendChild(resultScreen);
+
+    const bgm = document.getElementById('startBgm'); // プレイ中のBGM
+    bgm.pause(); // プレイ中のBGMを停止
+    bgm.currentTime = 0; // 再生位置を最初に戻す
+
+    const failedSound = document.getElementById('failed'); // ゲームオーバー時のBGM
+    failedSound.play(); // ゲームオーバー時のBGMを再生
 }
