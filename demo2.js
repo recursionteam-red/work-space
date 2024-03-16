@@ -837,6 +837,7 @@ function generateMino(field,currentMinoProperties) {
     else{
         gameOver = true;
         updatedTopScoreDisplay();
+        showResultScreen();
         console.log("genarateMIno Game Over", gameOver);
     }
 }
