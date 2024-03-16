@@ -140,10 +140,11 @@ function togglePauseBgm() {
 ////////////////////////↓環境↓////////////////////////////////
 
 class Cell {
-    constructor(value = 0, isWall = false, color = 'white') { // 色のデフォルト値を追加
+    constructor(value = 0, isWall = false, color = 'white', operatingMino = true) { // 色のデフォルト値を追加
         this.value = value;
         this.isWall = isWall;
         this.color = color; // 色のプロパティを追加
+        this.operatingMino = operatingMino;
     }
 }
 
@@ -192,7 +193,17 @@ class Field {
             }
         }
     }
-
+    // フィールド内の全てのセルを走査して、valueが1のセルのoperatingMinoをfalseに設定
+    setOperatingMinoFalse() {
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++) {
+                let cell = this.grid[y][x];
+                if (cell.value === 1) {
+                    cell.operatingMino = false;
+                }
+            }
+        }
+    }
     // フィールドの状態をコンソールに表示するメソッド（デバッグ用）
     printField() {
         this.grid.forEach(row => {
@@ -428,6 +439,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             clearInterval(intervalId); // 自動落下を停止
             intervalId = null;
+            field.setOperatingMinoFalse();
             // 新しいミノを生成
             const mino1 = new Mino();
             currentMinoProperties = mino1.getRandomShapeAndColor();
@@ -539,7 +551,8 @@ function isColliding(field, minoShape, minoPosition, action) {
 
     if (action === 'ArrowUp') {
         newShape = minoRotate(newShape); // 回転した新しい形状を取得
-    } 
+    }
+    
     // 更新された位置と形状で衝突チェック
     for (let y = 0; y < newShape.length; y++) {
         for (let x = 0; x < newShape[y].length; x++) {
@@ -547,33 +560,26 @@ function isColliding(field, minoShape, minoPosition, action) {
                 let fieldY = minoPosition.y + y;
                 let fieldX = minoPosition.x + x;
                 console.log(fieldY, "fieldY", fieldX, "fieldX");
+                
                 // フィールドの境界または他のミノとの衝突をチェック
-                if (fieldX <= 0 || fieldX >= field.width - 1|| fieldY <= 0 || fieldY >= field.height -1) {
-                    // if (fieldX <= 0 || fieldX >= field.width - 1) {
-                    console.log("fieldX <= 0せいこう、衝突あり");
-                    return true; // 衝突あり
+                if (fieldX <= 0 || fieldX >= field.width - 1 || fieldY <= 0 || fieldY >= field.height - 1) {
+                    console.log("境界での衝突があります");
+                    return true; // 境界での衝突あり
                 }
-                // if (field.grid[fieldY][fieldX].value !== 0) {
-                //     console.log("fieldX <= 0せいこう、かべは大丈夫だが他のみのと衝突あり");
-                //     return true; // 他のミノとの衝突
-                // }
-
+                
+                if (field.grid[fieldY][fieldX].value !== 0 && !field.grid[fieldY][fieldX].operatingMino) {
+                    console.log("他のミノとの衝突があります");
+                    return true; // 他のミノとの衝突
+                }
             }
         }
     }
-
-    // 衝突なし
-    console.log("衝突がない");
-    return false;
-
-    // field: プレイフィールドの二次元配列
-    // minoShape: ミノの形状を表す二次元配列
-    // minoPosition: ミノの現在位置（{x: _, y: _}のようなオブジェクト）
-    // action: 移動方向や回転（'left', 'right', 'down', 'rotate' などの文字列）
-
-    // ここで衝突判定のロジックを実装
-    // 衝突があればtrueを返し、なければfalseを返す
+    
+    console.log("衝突がありません");
+    return false; // 衝突なし
 }
+
+
 // 初期落下位置のセーフティーチェック
 function canPlaceMino(field, minoShape, initialPosition) {
     for (let y = 0; y < minoShape.length; y++) {
