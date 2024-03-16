@@ -548,8 +548,11 @@ document.addEventListener('DOMContentLoaded', function() {
         scoreDisplay.style.color = 'white';
 
         const retryButton = document.createElement('button');
-        retryButton.classList.add("pixel-button")
-        retryButton.innerText = 'Retry';
+        retryButton.classList.add("btn","pixel-button");
+        const h2_3 = document.createElement("h2");
+        const gameText3 = document.createTextNode("Retry");
+        h2_3.appendChild(gameText3);
+        retryButton.appendChild(h2_3);
         retryButton.onclick = function() {
             location.reload(); // ページをリロードしてゲームをリスタート
         };
