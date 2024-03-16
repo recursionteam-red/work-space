@@ -492,6 +492,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 新しいミノの初期位置を設定
             if (!canPlaceMino(field, currentMinoProperties.shape, currentMinoProperties.centerPosition)) {
                 gameOver = true;
+                showResultScreen()
                 console.log("Game Over",gameOver);
             }
             // 新しいミノでゲームを続けるために自動落下を再開
