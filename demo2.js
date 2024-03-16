@@ -547,6 +547,121 @@ document.addEventListener('DOMContentLoaded', function() {
             intervalId = null; // intervalIdをリセット
         }
     }
+    function showResultScreen() {
+        const resultScreen = document.createElement('div');
+        resultScreen.id = 'resultScreen';
+        resultScreen.style.position = 'fixed';
+        resultScreen.style.top = '0';
+        resultScreen.style.left = '0';
+        resultScreen.style.width = '100%';
+        resultScreen.style.height = '100%';
+        resultScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        resultScreen.style.display = 'flex';
+        resultScreen.style.flexDirection = 'column';
+        resultScreen.style.justifyContent = 'center';
+        resultScreen.style.alignItems = 'center';
+        resultScreen.style.zIndex = '1000';
+    
+        const scoreDisplay = document.createElement('h2');
+        scoreDisplay.innerText = 'Score: ' + currentScore;
+        scoreDisplay.style.color = 'white';
+    
+        const retryButton = document.createElement('button');
+        retryButton.classList.add("btn","pixel-button");
+        const h2_3 = document.createElement("h2");
+        const gameText3 = document.createTextNode("Retry");
+        h2_3.appendChild(gameText3);
+        retryButton.appendChild(h2_3);
+        resultScreen.appendChild(scoreDisplay);
+        resultScreen.appendChild(retryButton);
+        document.body.appendChild(resultScreen);
+    
+        const bgm = document.getElementById('startBgm'); // プレイ中のBGM
+        bgm.pause(); // プレイ中のBGMを停止
+        bgm.currentTime = 0; // 再生位置を最初に戻す
+    
+        const failedSound = document.getElementById('failed'); // ゲームオーバー時のBGM
+        failedSound.play(); // ゲームオーバー時のBGMを再生
+        retryButton.onclick = function() {
+            if (gameOver) {
+                console.log("Starting a new game");
+                // resultScreenを削除
+                resultScreen.remove();
+                
+                // ゲームの初期化処理
+                initializeGame();
+            }
+        };
+    
+        function initializeGame() {
+            updatedTopScoreDisplay(); // 最高スコア表示を更新
+            currentScore = 0; // スコアをリセット
+            updateScoreDisplay(); // スコア表示を更新
+            previousMinoProperties = null;
+            intervalId = null;
+            gameOver = false;
+            field = new Field(22, 12); // 新しいフィールドを作成
+            lastLeftRightMoveTime = 0;
+            lastDownMoveTime = 0;
+            lastRotateTime = 0;
+            currentMinoProperties = mino.getRandomShapeAndColor(); // 新しいミノを生成
+            if (canvas) {
+                canvas.width = 360;
+                canvas.height = 660;
+                // 初期フィールドの描画
+                drawField(field);
+                // ミノの生成とフィールドへの配置
+                currentMinoProperties.centerPosition = generateMino(field,currentMinoProperties);
+            }
+            
+            // プレイ中のBGMを再開
+            const bgm = document.getElementById('startBgm');
+            bgm.play();
+            
+            // キーボードイベントリスナーを無効化
+            keyEvent = false;
+        }
+    }
+    function generateMino(field,currentMinoProperties) {
+        console.log("Generating a new mino");
+        console.log("generateMino:Current mino properties:", currentMinoProperties); // 現在のミノのプロパティをログに出力
+        const selectedMino = currentMinoProperties;
+        console.log("Selected mino:", selectedMino); // 選択されたミノのプロパティをログに出力
+        
+    
+        // フィールドの幅から左右の壁を除外した実際に使用できる幅を計算
+        const playableWidth = field.width - 2; // 左端と右端の壁の幅を除外
+        console.log("playlableWidth", playableWidth, "selectedlength", selectedMino.shape[0].length);
+    
+        // ミノの初期位置のX座標を壁を考慮して計算
+        let startPositionX = 1 + Math.floor((playableWidth - selectedMino.shape[0].length) / 2);//Iだと5-1は4
+        console.log(startPositionX, "startPositionX");
+        // ミノがフィールドの壁にめり込まないようにY座標を1に設定
+        let startPositionY = 1;
+    
+        // ミノの初期位置を設定
+        let startPosition = { x: startPositionX, y: startPositionY };
+    
+        // フィールドにミノを配置できるかどうかをチェック
+        if(canPlaceMino(field, selectedMino.shape, startPosition)){
+            console.log("Mino can be placed")
+            // ミノをフィールドに配置
+            field.placeMino(selectedMino.shape, startPosition, selectedMino.color);
+            
+    
+            // フィールドを描画
+            drawField(field);
+            console.log("Field drawn with new mino");
+            return startPosition;
+        }
+        else{
+            gameOver = true;
+            updatedTopScoreDisplay();
+            showResultScreen();
+            console.log("genarateMIno Game Over", gameOver);
+        }
+    }
+    
 });
 
 
@@ -802,45 +917,7 @@ function drawField(field) {
     console.log("Canvas redrawn"); // キャンバスが再描画されたことをログに出力
 }
 
-function generateMino(field,currentMinoProperties) {
-    console.log("Generating a new mino");
-    console.log("generateMino:Current mino properties:", currentMinoProperties); // 現在のミノのプロパティをログに出力
-    const selectedMino = currentMinoProperties;
-    console.log("Selected mino:", selectedMino); // 選択されたミノのプロパティをログに出力
-    
 
-    // フィールドの幅から左右の壁を除外した実際に使用できる幅を計算
-    const playableWidth = field.width - 2; // 左端と右端の壁の幅を除外
-    console.log("playlableWidth", playableWidth, "selectedlength", selectedMino.shape[0].length);
-
-    // ミノの初期位置のX座標を壁を考慮して計算
-    let startPositionX = 1 + Math.floor((playableWidth - selectedMino.shape[0].length) / 2);//Iだと5-1は4
-    console.log(startPositionX, "startPositionX");
-    // ミノがフィールドの壁にめり込まないようにY座標を1に設定
-    let startPositionY = 1;
-
-    // ミノの初期位置を設定
-    let startPosition = { x: startPositionX, y: startPositionY };
-
-    // フィールドにミノを配置できるかどうかをチェック
-    if(canPlaceMino(field, selectedMino.shape, startPosition)){
-        console.log("Mino can be placed")
-        // ミノをフィールドに配置
-        field.placeMino(selectedMino.shape, startPosition, selectedMino.color);
-        
-
-        // フィールドを描画
-        drawField(field);
-        console.log("Field drawn with new mino");
-        return startPosition;
-    }
-    else{
-        gameOver = true;
-        updatedTopScoreDisplay();
-        showResultScreen();
-        console.log("genarateMIno Game Over", gameOver);
-    }
-}
 
 // lined BGMを再生する関数
 function playLinedSound() {
@@ -853,43 +930,3 @@ function playLinedSound() {
 
 
 
-function showResultScreen() {
-    const resultScreen = document.createElement('div');
-    resultScreen.id = 'resultScreen';
-    resultScreen.style.position = 'fixed';
-    resultScreen.style.top = '0';
-    resultScreen.style.left = '0';
-    resultScreen.style.width = '100%';
-    resultScreen.style.height = '100%';
-    resultScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    resultScreen.style.display = 'flex';
-    resultScreen.style.flexDirection = 'column';
-    resultScreen.style.justifyContent = 'center';
-    resultScreen.style.alignItems = 'center';
-    resultScreen.style.zIndex = '1000';
-
-    const scoreDisplay = document.createElement('h2');
-    scoreDisplay.innerText = 'Score: ' + currentScore;
-    scoreDisplay.style.color = 'white';
-
-    const retryButton = document.createElement('button');
-    retryButton.classList.add("btn","pixel-button");
-    const h2_3 = document.createElement("h2");
-    const gameText3 = document.createTextNode("Retry");
-    h2_3.appendChild(gameText3);
-    retryButton.appendChild(h2_3);
-    retryButton.onclick = function() {
-        location.reload(); // ページをリロードしてゲームをリスタート
-    };
-
-    resultScreen.appendChild(scoreDisplay);
-    resultScreen.appendChild(retryButton);
-    document.body.appendChild(resultScreen);
-
-    const bgm = document.getElementById('startBgm'); // プレイ中のBGM
-    bgm.pause(); // プレイ中のBGMを停止
-    bgm.currentTime = 0; // 再生位置を最初に戻す
-
-    const failedSound = document.getElementById('failed'); // ゲームオーバー時のBGM
-    failedSound.play(); // ゲームオーバー時のBGMを再生
-}
