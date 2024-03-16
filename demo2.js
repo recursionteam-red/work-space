@@ -183,7 +183,7 @@ class Field {
                 if (shape[y][x] !== 0) {
                     let fieldY = position.y + y;
                     let fieldX = position.x + x;
-                    if (fieldY >= 0 && fieldY < this.height && fieldX >= 0 && fieldX < this.width) {
+                    if (fieldY >= 0 && fieldY < this.height && fieldX >= 0 && fieldX < this.width&& !this.grid[fieldY][fieldX].isWall) {
                         this.grid[fieldY][fieldX].value = 1;
                         this.grid[fieldY][fieldX].isWall = false;
                         this.grid[fieldY][fieldX].color = color;
@@ -479,7 +479,7 @@ function clearMino(field, shape, previousPosition) {
                 let fieldY = previousPosition.y + y;
                 let fieldX = previousPosition.x + x;
                 // ミノが占めていたセルをデフォルト値にリセット
-                if (field.grid[fieldY] && field.grid[fieldY][fieldX]) {
+                if (field.grid[fieldY] && field.grid[fieldY][fieldX]&& !field.grid[fieldY][fieldX].isWall) {
                     field.grid[fieldY][fieldX].value = 0;
                     field.grid[fieldY][fieldX].color = 'white'; // またはフィールドのデフォルト背景色
                 }
