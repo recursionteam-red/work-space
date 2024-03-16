@@ -79,7 +79,7 @@ display.setAttribute("id", "play-canvas");            ///field canvas id///
 displayDiv.appendChild(display);
 //中央フィールド作成
 
-paramDiv.classList.add("div-overlay", "custom-margin", "d-flex", "justify-content-center", "align-items-center", "m-", "p-5", "col-3", "flex-column");
+paramDiv.classList.add("div-overlay", "custom-margin", "d-flex", "justify-content-center", "align-items-center", "m-5", "p-5", "col-3", "flex-column");
 //右側枠作成
 
 let scoreLabel = document.createElement("h3");
@@ -193,7 +193,7 @@ class Field {
                 if (shape[y][x] !== 0) {
                     let fieldY = position.y + y;
                     let fieldX = position.x + x;
-                    if (fieldY >= 0 && fieldY < this.height && fieldX >= 0 && fieldX < this.width&& !this.grid[fieldY][fieldX].isWall) {
+                    if (fieldY >= 0 && fieldY < this.height && fieldX >= 0 && fieldX < this.width) {
                         this.grid[fieldY][fieldX].value = 1;
                         this.grid[fieldY][fieldX].isWall = false;
                         this.grid[fieldY][fieldX].color = color;
@@ -216,7 +216,7 @@ class Field {
     // フィールドの状態をコンソールに表示するメソッド（デバッグ用）
     printField() {
         this.grid.forEach(row => {
-            console.log(row.map(cell => cell.isWall ? 100 : cell.value).join(' '));
+           // console.log(row.map(cell => cell.isWall ? 100 : cell.value).join(' '));
         });
     }
 }
@@ -306,6 +306,7 @@ let intervalId = null;
 let gameOver = false;
 let currentScore = 0;
 let topscore = 0;
+let level = 1;
 // DOMContentLoaded イベントリスナー内で field インスタンスを初期化
 //ページが完全に読み込まれた後に実行
 document.addEventListener('DOMContentLoaded', function() {
@@ -316,6 +317,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const mino = new Mino(); // Minoクラスのインスタンスを作成
     let currentMinoProperties = mino.getRandomShapeAndColor(); // メソッドを呼び出してプロパティを取得
     let moved = false;
+    let lastLeftRightMoveTime = 0;
+    let lastDownMoveTime = 0;
+    let lastRotateTime = 0;
+    let keyEvent = false;
 
     //////////////////////////
     // 全てのaudio要素の音量を設定
@@ -337,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 初期フィールドの描画
         drawField(field);
-        console.log()
+        //console.log()
         // ミノの生成とフィールドへの配置
         currentMinoProperties.centerPosition = generateMino(field,currentMinoProperties);
     }
@@ -352,16 +357,20 @@ document.addEventListener('DOMContentLoaded', function() {
         startBgm.loop = true; // ループを有効化
         startBgm.play(); // プレイ用のBGMを再生
         startAutoDown(); // 1秒ごとに落下
+        keyEvent = true; // キーボードイベントを有効化
         if (gameOver) {
-            console.log("Starting a new game");
+            //console.log("Starting a new game");
             // ゲームオーバー状態の場合、新しいゲームを開始
+            updatedTopScoreDisplay(); // 最高スコア表示を更新
             currentScore = 0; // スコアをリセット
             updateScoreDisplay(); // スコア表示を更新
-            updatedTopScoreDisplay(); // 最高スコア表示を更新
             previousMinoProperties = null;
             intervalId = null;
             gameOver = false;
             field = new Field(22, 12); // 新しいフィールドを作成
+            lastLeftRightMoveTime = 0;
+            lastDownMoveTime = 0;
+            lastRotateTime = 0;
             currentMinoProperties = mino.getRandomShapeAndColor(); // 新しいミノを生成
             if (canvas) {
                 canvas.width = 360;
@@ -373,122 +382,95 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentMinoProperties.centerPosition = generateMino(field,currentMinoProperties);
             }
         }
+
     });
 
     // ポーズボタンを押した時の処理
     document.getElementById('pause-restart-button').addEventListener('click', function() {
         togglePauseBgm(); // BGMの一時停止/再開
         stopAutoDown(); // 落下を一時停止
+        keyEvent = false; // キーボードイベントの無効化
     });
 
     //キーボードイベントリスナーの設定（例：左右下回転移動）
-    document.addEventListener('keydown', (event) => {
+    document.addEventListener('keydown', handleKeyDown);
+
     
-        console.log(`Key pressed: ${event.key}`); // どのキーが押されたかをログに出力
-        console.log("currentMinoProperties:", currentMinoProperties); // 現在のミノのプロパティをログに出力
+    function handleKeyDown(event) {
+        if (!keyEvent) {
+            return;
+        }
+       // console.log(`Key pressed: ${event.key}`); // どのキーが押されたかをログに出力
+        //console.log("currentMinoProperties:", currentMinoProperties); // 現在のミノのプロパティをログに出力
+    
+        const currentTime = Date.now();
+    
         switch (event.key) {
             case "ArrowLeft":
-               // 左に移動する処理
-               console.log(currentMinoProperties.centerPosition.x, "こりでぃんぐまえのX");
-                if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x - 1, y: currentMinoProperties.centerPosition.y}, "ArrowLeft")) {
-                    
-                    previousMinoProperties = {
-                        ...currentMinoProperties, centerPosition: { ...currentMinoProperties.centerPosition }
-                    };
-                    currentMinoProperties.centerPosition.x -= 1;
-                    moved = true;
-                    console.log("左に移動");
-                    console.log(currentMinoProperties.centerPosition.x, "こりでぃんぐごのX");
-                }else{
-                    console.log(currentMinoProperties.centerPosition.x, "衝突があります");
-                }
-                event.preventDefault();
-                break;
-                
             case "ArrowRight":
-                // 右に移動する処理
-                if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x + 1, y: currentMinoProperties.centerPosition.y}, "ArrowRight")) {
-                    previousMinoProperties = {
-                        ...currentMinoProperties,
-                        centerPosition: { ...currentMinoProperties.centerPosition }
-                    };
-                    currentMinoProperties.centerPosition.x += 1;
-                    moved = true;
+                if (currentTime - lastLeftRightMoveTime >= 100) {
+                    lastLeftRightMoveTime = currentTime;
+                    switch (event.key) {
+                        case "ArrowLeft":
+                            moveMinoLeft();
+                            break;
+                        case "ArrowRight":
+                            moveMinoRight();
+                            break;
+                    }
+                }
+                break;
+            case "ArrowDown":
+                if (currentTime - lastDownMoveTime >= 50) {
+                    lastDownMoveTime = currentTime;
+                    moveMinoDown();
                 }
                 event.preventDefault();
-                break;
-                
-            case "ArrowDown":
-                // 下に移動する処理
-                if (!collisionCheck(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}, "ArrowDown")) {
-                    previousMinoProperties = {
-                        ...currentMinoProperties,
-                        centerPosition: { ...currentMinoProperties.centerPosition }
-                    };
-                    currentMinoProperties.centerPosition.y += 1;
-                    moved = true;
-                }
-                event.preventDefault(); // ページのスクロールを防ぐ
                 break;
             case "ArrowUp":
-                // 回転する処理
-                if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}, "ArrowUp")) {
-                    console.log("Attempting to rotate the mino");
-                    console.log("回す前",currentMinoProperties.shape);
-                    previousMinoProperties = {
-                        ...currentMinoProperties,
-                        shape: JSON.parse(JSON.stringify(currentMinoProperties.shape))
-                    };
+                if (currentTime - lastRotateTime >= 200) {
+                    lastRotateTime = currentTime;
+                    rotateMinoUp();
                 }
-                const rotatedShape = minoRotate(currentMinoProperties.shape);
-                console.log("回した後", rotatedShape);
-                currentMinoProperties.shape = rotatedShape;
-                console.log("いれたあと", currentMinoProperties.shape);
-                moved = true;
-                console.log("Mino rotated successfully"); 
-                event.preventDefault(); // ページのスクロールを防ぐ
+                event.preventDefault();
                 break;
             default:
                 event.preventDefault();
-                // 対応するキーがない場合の処理
                 break;
-                
         }
-
-        if (moved && event.key !== "ArrowDown") {
-            console.log("Mino moved or rotated"); 
-            // ミノの移動や回転が行われた場合、フィールドを更新してキャンバスに反映
-            console.log("updateがよびだされるまえのX", currentMinoProperties.centerPosition.x);
-            updateField(field, currentMinoProperties, previousMinoProperties);
-            drawField(field);
+    }
+    function moveMinoLeft() {
+        // 左に移動する処理
+       // console.log(currentMinoProperties.centerPosition.x, "こりでぃんぐまえのX");
+        if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x - 1, y: currentMinoProperties.centerPosition.y}, "ArrowLeft")) {
+            previousMinoProperties = {
+                ...currentMinoProperties, centerPosition: { ...currentMinoProperties.centerPosition }
+            };
+            currentMinoProperties.centerPosition.x -= 1;
+            moved = true;
+           // console.log("左に移動");
+          //  console.log(currentMinoProperties.centerPosition.x, "こりでぃんぐごのX");
+        } else {
+           // console.log(currentMinoProperties.centerPosition.x, "衝突があります");
         }
-        else if(moved && event.key === "ArrowDown"){
-            console.log("updateがよびだされるまえのX", currentMinoProperties.centerPosition.x);
-            updateField(field, currentMinoProperties, previousMinoProperties);
-            drawField(field);
-            if (collisionCheck(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}, "ArrowDown")){
-                clearInterval(intervalId); // 自動落下を停止
-                intervalId = null;
-                field.setOperatingMinoFalse();
-                minoDelete(field)
-                // 新しいミノを生成
-                const mino1 = new Mino();
-                currentMinoProperties = mino1.getRandomShapeAndColor();
-                currentMinoProperties.centerPosition = generateMino(field,currentMinoProperties);
-                // 新しいミノの初期位置を設定
-                
-                if (!canPlaceMino(field, currentMinoProperties.shape, currentMinoProperties.centerPosition)) {
-                    gameOver = true;
-                    console.log("Game Over",gameOver);
-                }
-                // 新しいミノでゲームを続けるために自動落下を再開
-                startAutoDown();
-            }
-        
+        updateFieldAndDraw();
+    }
+    
+    function moveMinoRight() {
+        // 右に移動する処理
+        if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x + 1, y: currentMinoProperties.centerPosition.y}, "ArrowRight")) {
+            previousMinoProperties = {
+                ...currentMinoProperties,
+                centerPosition: { ...currentMinoProperties.centerPosition }
+            };
+            currentMinoProperties.centerPosition.x += 1;
+            moved = true;
         }
-    });
-
+        updateFieldAndDraw();
+    }
+    
     function moveMinoDown() {
+        // 下に移動する処理
         if (!collisionCheck(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}, "ArrowDown")) {
             previousMinoProperties = {
                 ...currentMinoProperties,
@@ -496,73 +478,57 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             currentMinoProperties.centerPosition.y += 1;
             moved = true;
-        } else {
+        }
+        updateFieldAndDraw();
+        if (collisionCheck(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}, "ArrowDown")) {
             clearInterval(intervalId); // 自動落下を停止
             intervalId = null;
             field.setOperatingMinoFalse();
             minoDelete(field);
-            
+            // 新しいミノを生成
+            const mino1 = new Mino();
+            currentMinoProperties = mino1.getRandomShapeAndColor();
+            currentMinoProperties.centerPosition = generateMino(field,currentMinoProperties);
+            // 新しいミノの初期位置を設定
             if (!canPlaceMino(field, currentMinoProperties.shape, currentMinoProperties.centerPosition)) {
                 gameOver = true;
-                console.log("Game Over", gameOver);
-
-                // BGMを停止し、失敗音を再生
-                const startBgm = document.getElementById('startBgm');
-                startBgm.pause();
-                const failedSound = document.getElementById('failed');
-                failedSound.play();
-
-                // リザルト画面を表示
-                showResultScreen();
-                return; // ゲームオーバー時にはこれ以上処理を続けない
+                showResultScreen()
+           //     console.log("Game Over",gameOver);
             }
-
-            // 新しいミノの自動落下を開始
+            // 新しいミノでゲームを続けるために自動落下を再開
             startAutoDown();
         }
-
+    }
+    
+    function rotateMinoUp() {
+        // 回転する処理
+        if (!isColliding(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}, "ArrowUp")) {
+           // console.log("Attempting to rotate the mino");
+            //console.log("回す前",currentMinoProperties.shape);
+            previousMinoProperties = {
+                ...currentMinoProperties,
+                shape: JSON.parse(JSON.stringify(currentMinoProperties.shape))
+            };
+            const rotatedShape = minoRotate(currentMinoProperties.shape);
+           // console.log("回した後", rotatedShape);
+            currentMinoProperties.shape = rotatedShape;
+           // console.log("いれたあと", currentMinoProperties.shape);
+            moved = true;
+          //  console.log("Mino rotated successfully"); 
+        }
+        updateFieldAndDraw();
+    }
+    
+    function updateFieldAndDraw() {
         if (moved) {
+           // console.log("Mino moved or rotated"); 
+            // ミノの移動や回転が行われた場合、フィールドを更新してキャンバスに反映
+           // console.log("updateがよびだされるまえのX", currentMinoProperties.centerPosition.x);
             updateField(field, currentMinoProperties, previousMinoProperties);
             drawField(field);
-            moved = false;
         }
     }
-
-    function showResultScreen() {
-        const resultScreen = document.createElement('div');
-        resultScreen.id = 'resultScreen';
-        resultScreen.style.position = 'fixed';
-        resultScreen.style.top = '0';
-        resultScreen.style.left = '0';
-        resultScreen.style.width = '100%';
-        resultScreen.style.height = '100%';
-        resultScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-        resultScreen.style.display = 'flex';
-        resultScreen.style.flexDirection = 'column';
-        resultScreen.style.justifyContent = 'center';
-        resultScreen.style.alignItems = 'center';
-        resultScreen.style.zIndex = '1000';
-
-        const scoreDisplay = document.createElement('h2');
-        scoreDisplay.innerText = 'Score: ' + currentScore;
-        scoreDisplay.style.color = 'white';
-
-        const retryButton = document.createElement('button');
-        retryButton.classList.add("btn","pixel-button");
-        const h2_3 = document.createElement("h2");
-        const gameText3 = document.createTextNode("Retry");
-        h2_3.appendChild(gameText3);
-        retryButton.appendChild(h2_3);
-        retryButton.onclick = function() {
-            location.reload(); // ページをリロードしてゲームをリスタート
-        };
-
-        resultScreen.appendChild(scoreDisplay);
-        resultScreen.appendChild(retryButton);
-
-        document.body.appendChild(resultScreen);
-    }
-
+    
     function startAutoDown() {
         // 既に動作しているタイマーをクリア
         if (intervalId !== null) {
@@ -571,7 +537,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // 1秒ごとにログを表示し、ミノを下に移動させる
         intervalId = setInterval(() => {
             moveMinoDown();
-        }, 1000);
+        }, 1000 - (level - 1) * 10);
     }
     
     function stopAutoDown() {
@@ -603,16 +569,16 @@ function clearMino(field, shape, previousPosition) {
 
 // フィールドを更新する関数
 function updateField(field, currentMinoProperties, previousPosition) {
-    console.log("Updating field with new mino position and shape");
+   // console.log("Updating field with new mino position and shape");
     // 現在のミノをフィールドからクリア
-    console.log("クリア前", field);
+   // console.log("クリア前", field);
     clearMino(field, previousPosition.shape, previousPosition.centerPosition);
-    console.log("クリア後、placeminoの前", field);
+   // console.log("クリア後、placeminoの前", field);
     
-    console.log("placeminoを読み込む前のcurrentぷろぱてぃ", currentMinoProperties);
+   // console.log("placeminoを読み込む前のcurrentぷろぱてぃ", currentMinoProperties);
     // 新しい位置にミノを再配置
     field.placeMino(currentMinoProperties.shape, currentMinoProperties.centerPosition, currentMinoProperties.color);
-    console.log("placeminoを読んだ後", field);
+   // console.log("placeminoを読んだ後", field);
     // console.log("位置変化");
     // console.log(currentMinoProperties.centerPosition);
     // console.log("形状変化");
@@ -622,7 +588,6 @@ function updateField(field, currentMinoProperties, previousPosition) {
 }
 
 function minoOperate(minoPosition, action) {
-    // 仮作成
     // action: 'left', 'right', 'down', 'rotate'
     switch (action) {
         case 'Arrowleft':
@@ -653,64 +618,62 @@ function collisionCheck(field, minoShape, minoPosition, action) {
             if (minoShape[y][x] !== 0) {
                 let fieldY = minoPosition.y + y;
                 let fieldX = minoPosition.x + x;
-                console.log(fieldY, "fieldY", fieldX, "fieldX");
+          //      console.log(fieldY, "fieldY", fieldX, "fieldX");
                 // 下の壁との衝突をチェック
                 if(field.grid[fieldY][fieldX].isWall && field.grid[fieldY][fieldX].value === 200){
-                    console.log("checkcolです 下壁との衝突があります");
+              //      console.log("壁との衝突があります");
                     return true;
                 }
-                if(field.grid[fieldY][fieldX].isWall && field.grid[fieldY][fieldX].value === 100){
-                    console.log("checkcolです サイド壁との衝突があります");
-                    return true;
-                }
+                
                 if (field.grid[fieldY][fieldX].value !== 0 && !field.grid[fieldY][fieldX].operatingMino) {
-                    console.log("checkcolです 他のミノとの衝突があります");
+               //     console.log("他のミノとの衝突があります");
                     return true; // 他のミノとの衝突
                 }
-                let field6 = field
-                console.log("collisioncheck後のfield", field6)
             }
         }
     }
     
-    console.log("衝突がありません");
+   // console.log("衝突がありません");
     return false; // 衝突なし
 }
 
 // arrowDown以外の操作で衝突があるかどうかをチェックする関数
 function isColliding(field, minoShape, minoPosition, action) {
     let newShape = minoShape;
+    let newPosition = {...minoPosition};
 
     if (action === 'ArrowUp') {
-        newShape = minoRotate(newShape); // 回転した新しい形状を取得
+        newShape = minoRotate(newShape);
+        // 回転後のミノの中心位置を計算
+        const shapeHeight = newShape.length;
+        const shapeWidth = newShape[0].length;
+        newPosition.x += Math.floor((minoShape[0].length - shapeWidth) / 2);
+        newPosition.y += Math.floor((minoShape.length - shapeHeight) / 2);
     }
     
     // 更新された位置と形状で衝突チェック
     for (let y = 0; y < newShape.length; y++) {
         for (let x = 0; x < newShape[y].length; x++) {
             if (newShape[y][x] !== 0) {
-                let fieldY = minoPosition.y + y;
-                let fieldX = minoPosition.x + x;
-                console.log(fieldY, "fieldY", fieldX, "fieldX");
-                if(field.grid[fieldY][fieldX].isWall && field.grid[fieldY][fieldX].value === 100){
-                    console.log("iscollidingです  壁との衝突があります");
+                let fieldY = newPosition.y + y;
+                let fieldX = newPosition.x + x;
+                
+                if (field.grid[fieldY][fieldX].isWall && field.grid[fieldY][fieldX].value === 100) {
+                //    console.log("壁との衝突があります");
                     return true;
                 }
                 
-
-                else if(field.grid[fieldY][fieldX].value !== 0 && !field.grid[fieldY][fieldX].operatingMino) {
-                    console.log("is collidingです 他のミノとの衝突があります");
-                    return true; // 他のミノとの衝突
+                if (field.grid[fieldY][fieldX].value !== 0 && !field.grid[fieldY][fieldX].operatingMino) {
+                 //   console.log("他のミノとの衝突があります");
+                    return true;
                 }
             }
         }
-        return false;
     }
-    
-    console.log("衝突がありません");
-    return false; // 衝突なし
+  //  console.log("衝突がありません");
+    Object.assign(minoPosition, newPosition);
+    return false;
 }
-
 
 // 初期落下位置のセーフティーチェック
 function canPlaceMino(field, minoShape, initialPosition) {
@@ -726,7 +689,7 @@ function canPlaceMino(field, minoShape, initialPosition) {
                 
                 // 既に配置されているミノとの衝突をチェック
                 if (field.grid[fieldY][fieldX].value !== 0 && !field.grid[fieldY][fieldX].operatingMino) {
-                    console.log("他のミノとの衝突があります");
+                 //   console.log("他のミノとの衝突があります");
                     return false; // 他のミノとの衝突
                 }
             }
@@ -789,6 +752,7 @@ function minoDelete(field) {
 // 行が消去されたときにスコアを加算して表示を更新する関数
 function updateScore(linesCleared) {
     const pointsPerLine = 10; // 1行につき加算するポイント
+    level += 0.1;
     currentScore += linesCleared * pointsPerLine; // スコアを更新
     updateScoreDisplay(); // スコア表示を更新
 }
@@ -814,8 +778,8 @@ function updatedTopScoreDisplay() {
 
 // drawField関数を修正して、セルの色プロパティを使用
 function drawField(field) {
-    console.log("Redrawing field on canvas");
-    console.log("Field to draw:", field); // 描画するフィールドをログに出力
+ //   console.log("Redrawing field on canvas");
+  //  console.log("Field to draw:", field); // 描画するフィールドをログに出力
 
     const cellSize = 30;
     for (let y = 0; y < field.height; y++) {
@@ -835,28 +799,23 @@ function drawField(field) {
             ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
         }
     }
-    console.log("Canvas redrawn"); // キャンバスが再描画されたことをログに出力
+  //  console.log("Canvas redrawn"); // キャンバスが再描画されたことをログに出力
 }
 
 function generateMino(field,currentMinoProperties) {
-        // ゲームオーバー判定を行う
-    if (gameOver) {
-            console.log("Game over, no new mino generated.");
-            return null; // ゲームオーバー時にはnullを返す
-    }
-    console.log("Generating a new mino");
-    console.log("generateMino:Current mino properties:", currentMinoProperties); // 現在のミノのプロパティをログに出力
+   // console.log("Generating a new mino");
+   // console.log("generateMino:Current mino properties:", currentMinoProperties); // 現在のミノのプロパティをログに出力
     const selectedMino = currentMinoProperties;
-    console.log("Selected mino:", selectedMino); // 選択されたミノのプロパティをログに出力
+   // console.log("Selected mino:", selectedMino); // 選択されたミノのプロパティをログに出力
     
 
     // フィールドの幅から左右の壁を除外した実際に使用できる幅を計算
     const playableWidth = field.width - 2; // 左端と右端の壁の幅を除外
-    console.log("playlableWidth", playableWidth, "selectedlength", selectedMino.shape[0].length);
+  //  console.log("playlableWidth", playableWidth, "selectedlength", selectedMino.shape[0].length);
 
     // ミノの初期位置のX座標を壁を考慮して計算
     let startPositionX = 1 + Math.floor((playableWidth - selectedMino.shape[0].length) / 2);//Iだと5-1は4
-    console.log(startPositionX, "startPositionX");
+  //  console.log(startPositionX, "startPositionX");
     // ミノがフィールドの壁にめり込まないようにY座標を1に設定
     let startPositionY = 1;
 
@@ -865,20 +824,21 @@ function generateMino(field,currentMinoProperties) {
 
     // フィールドにミノを配置できるかどうかをチェック
     if(canPlaceMino(field, selectedMino.shape, startPosition)){
-        console.log("Mino can be placed")
+   //     console.log("Mino can be placed")
         // ミノをフィールドに配置
         field.placeMino(selectedMino.shape, startPosition, selectedMino.color);
         
 
         // フィールドを描画
         drawField(field);
-        console.log("Field drawn with new mino");
+      //  console.log("Field drawn with new mino");
         return startPosition;
     }
     else{
         gameOver = true;
         updatedTopScoreDisplay();
-        console.log("genarateMIno Game Over", gameOver);
+        showResultScreen();
+      //  console.log("genarateMIno Game Over", gameOver);
     }
 }
 
@@ -889,4 +849,47 @@ function playLinedSound() {
         linedSound.currentTime = 0; // BGMを最初から再生
         linedSound.play();
     }
+}
+
+
+
+function showResultScreen() {
+    const resultScreen = document.createElement('div');
+    resultScreen.id = 'resultScreen';
+    resultScreen.style.position = 'fixed';
+    resultScreen.style.top = '0';
+    resultScreen.style.left = '0';
+    resultScreen.style.width = '100%';
+    resultScreen.style.height = '100%';
+    resultScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    resultScreen.style.display = 'flex';
+    resultScreen.style.flexDirection = 'column';
+    resultScreen.style.justifyContent = 'center';
+    resultScreen.style.alignItems = 'center';
+    resultScreen.style.zIndex = '1000';
+
+    const scoreDisplay = document.createElement('h2');
+    scoreDisplay.innerText = 'Score: ' + currentScore;
+    scoreDisplay.style.color = 'white';
+
+    const retryButton = document.createElement('button');
+    retryButton.classList.add("btn","pixel-button");
+    const h2_3 = document.createElement("h2");
+    const gameText3 = document.createTextNode("Retry");
+    h2_3.appendChild(gameText3);
+    retryButton.appendChild(h2_3);
+    retryButton.onclick = function() {
+        location.reload(); // ページをリロードしてゲームをリスタート
+    };
+
+    resultScreen.appendChild(scoreDisplay);
+    resultScreen.appendChild(retryButton);
+    document.body.appendChild(resultScreen);
+
+    const bgm = document.getElementById('startBgm'); // プレイ中のBGM
+    bgm.pause(); // プレイ中のBGMを停止
+    bgm.currentTime = 0; // 再生位置を最初に戻す
+
+    const failedSound = document.getElementById('failed'); // ゲームオーバー時のBGM
+    failedSound.play(); // ゲームオーバー時のBGMを再生
 }
