@@ -425,14 +425,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     lastDownMoveTime = currentTime;
                     moveMinoDown();
                 }
+                event.preventDefault();
                 break;
             case "ArrowUp":
                 if (currentTime - lastRotateTime >= 200) {
                     lastRotateTime = currentTime;
                     rotateMinoUp();
                 }
+                event.preventDefault();
                 break;
             default:
+                event.preventDefault();
                 break;
         }
     }
