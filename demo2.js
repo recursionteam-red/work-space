@@ -320,6 +320,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let lastLeftRightMoveTime = 0;
     let lastDownMoveTime = 0;
     let lastRotateTime = 0;
+    let keyEvent = false;
 
     //////////////////////////
     // 全てのaudio要素の音量を設定
@@ -356,6 +357,7 @@ document.addEventListener('DOMContentLoaded', function() {
         startBgm.loop = true; // ループを有効化
         startBgm.play(); // プレイ用のBGMを再生
         startAutoDown(); // 1秒ごとに落下
+        keyEvent = true; // キーボードイベントを有効化
         if (gameOver) {
             console.log("Starting a new game");
             // ゲームオーバー状態の場合、新しいゲームを開始
@@ -380,12 +382,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentMinoProperties.centerPosition = generateMino(field,currentMinoProperties);
             }
         }
+
     });
 
     // ポーズボタンを押した時の処理
     document.getElementById('pause-restart-button').addEventListener('click', function() {
         togglePauseBgm(); // BGMの一時停止/再開
         stopAutoDown(); // 落下を一時停止
+        keyEvent = false; // キーボードイベントの無効化
     });
 
     //キーボードイベントリスナーの設定（例：左右下回転移動）
@@ -393,6 +397,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     
     function handleKeyDown(event) {
+        if (!keyEvent) {
+            return;
+        }
         console.log(`Key pressed: ${event.key}`); // どのキーが押されたかをログに出力
         console.log("currentMinoProperties:", currentMinoProperties); // 現在のミノのプロパティをログに出力
     
