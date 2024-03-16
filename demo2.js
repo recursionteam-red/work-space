@@ -443,6 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log("いれたあと", currentMinoProperties.shape);
                     moved = true;
                     console.log("Mino rotated successfully"); 
+                    
                 }
                 event.preventDefault(); // ページのスクロールを防ぐ
                 break;
@@ -662,6 +663,7 @@ function isColliding(field, minoShape, minoPosition, action) {
         }
     }
     console.log("衝突がありません");
+    Object.assign(minoPosition, newPosition);
     return false;
 }
 
