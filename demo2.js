@@ -395,6 +395,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     currentMinoProperties.centerPosition.y += 1;
                     moved = true;
                 }
+                event.preventDefault(); // ページのスクロールを防ぐ
                 break;
             case "ArrowUp":
                 // 回転する処理
@@ -412,6 +413,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log("いれたあと", currentMinoProperties.shape);
                 moved = true;
                 console.log("Mino rotated successfully"); 
+                event.preventDefault(); // ページのスクロールを防ぐ
                 break;
             default:
                 // 対応するキーがない場合の処理
