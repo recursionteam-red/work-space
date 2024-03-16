@@ -82,19 +82,20 @@ displayDiv.appendChild(display);
 paramDiv.classList.add("div-overlay", "custom-margin", "d-flex", "justify-content-center", "align-items-center", "m-5", "p-5", "col-3", "flex-column");
 //右側枠作成
 
-let score = document.createElement("h3");
+let scoreLabel = document.createElement("h3");
 let scoreVal = document.createElement("h3");
-scoreVal.setAttribute("id", "current_score");         ///score  id///
+scoreVal.setAttribute("id", "current_score"); // スコアの値を表示する要素の ID
 let next = document.createElement("h3");
-score.innerHTML = "SCORE";
-scoreVal.innerHTML = "0";
+scoreLabel.innerHTML = "SCORE";
+scoreVal.innerHTML = "0"; // 初期スコアは 0
+
 next.innerHTML = "NEXT";
 let nextCanvas = document.createElement("canvas");
 nextCanvas.setAttribute("id", "next-mino-canvas", "height", "128", "width", "128");   ///next mino canvas id///
 //右側内容
 paramDiv.appendChild(next);
 paramDiv.appendChild(nextCanvas);
-paramDiv.appendChild(score);
+paramDiv.appendChild(scoreLabel);
 paramDiv.appendChild(scoreVal);
 
 //右側作成
@@ -673,7 +674,7 @@ function minoRotate(minoShape) {
 function minoDelete(field) {
     // 削除すべき行のインデックスを格納する配列
     let deleteRowIndex = [];
-
+    
     // フィールドを走査して削除すべき行を特定
     for (let i = 1; i < field.height - 1; i++) { // 最上段と最下段の壁は無視
         let isFull = true; // その行が完全にミノで埋まっているかをチェックするフラグ
@@ -697,14 +698,32 @@ function minoDelete(field) {
             let newRow = Array.from({ length: field.width }, (v, i) => new Cell(i === 0 || i === field.width - 1 ? 100 : 0, i === 0 || i === field.width - 1));
             field.grid.splice(1, 0, newRow); // 新しい行を挿入
         }
+
+        // ここで削除された行数を更新
+        let linesCleared = deleteRowIndex.length;
+        updateScore(linesCleared); // 行が消去されたらスコアを更新
     }
 }
 
 
-//1列ごとに10点
-function calScore(){
-    let DeleteCheckResultArray = DeleteOneDimensional();
-    return DeleteCheckResultArray.length * 10;
+
+// スコアを保持する変数
+let currentScore = 0;
+
+// 行が消去されたときにスコアを加算して表示を更新する関数
+function updateScore(linesCleared) {
+    const pointsPerLine = 10; // 1行につき加算するポイント
+    currentScore += linesCleared * pointsPerLine; // スコアを更新
+    updateScoreDisplay(); // スコア表示を更新
+}
+
+// HTML 上のスコア表示を更新する関数
+function updateScoreDisplay() {
+    // "current_score" という ID を持つ要素を取得
+    const scoreElement = document.getElementById("current_score");
+    if (scoreElement) {
+        scoreElement.innerHTML = currentScore.toString(); // スコアの値で更新
+    }
 }
 
 
