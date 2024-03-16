@@ -84,10 +84,15 @@ paramDiv.classList.add("div-overlay", "custom-margin", "d-flex", "justify-conten
 
 let scoreLabel = document.createElement("h3");
 let scoreVal = document.createElement("h3");
+let topValLabel = document.createElement("h3");
+let topVal = document.createElement("h3");
 scoreVal.setAttribute("id", "current_score"); // スコアの値を表示する要素の ID
+topVal.setAttribute("id", "top_score"); // 最高スコアの値を表示する要素の ID
 let next = document.createElement("h3");
 scoreLabel.innerHTML = "SCORE";
 scoreVal.innerHTML = "0"; // 初期スコアは 0
+topValLabel.innerHTML = "TOP SCORE";
+topVal.innerHTML = "0"; // 初期最高スコアは 0
 
 next.innerHTML = "NEXT";
 let nextCanvas = document.createElement("canvas");
@@ -97,6 +102,8 @@ paramDiv.appendChild(next);
 paramDiv.appendChild(nextCanvas);
 paramDiv.appendChild(scoreLabel);
 paramDiv.appendChild(scoreVal);
+paramDiv.appendChild(topValLabel);
+paramDiv.appendChild(topVal);
 
 //右側作成
 
@@ -298,6 +305,7 @@ let previousMinoProperties;
 let intervalId = null;
 let gameOver = false;
 let currentScore = 0;
+let topscore = 0;
 // DOMContentLoaded イベントリスナー内で field インスタンスを初期化
 //ページが完全に読み込まれた後に実行
 document.addEventListener('DOMContentLoaded', function() {
@@ -349,6 +357,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // ゲームオーバー状態の場合、新しいゲームを開始
             currentScore = 0; // スコアをリセット
             updateScoreDisplay(); // スコア表示を更新
+            updatedTopScoreDisplay(); // 最高スコア表示を更新
             previousMinoProperties = null;
             intervalId = null;
             gameOver = false;
@@ -743,7 +752,16 @@ function updateScoreDisplay() {
         scoreElement.innerHTML = currentScore.toString(); // スコアの値で更新
     }
 }
-
+function updatedTopScoreDisplay() {
+    // "top_score" という ID を持つ要素を取得
+    if(currentScore > topscore){
+        topscore = currentScore;
+    }
+    const topscoreElement = document.getElementById("top_score"); 
+    if (topscoreElement) {
+        topscoreElement.innerHTML = topscore.toString(); // スコアの値で更新
+    }
+}
 
 // drawField関数を修正して、セルの色プロパティを使用
 function drawField(field) {
@@ -805,6 +823,7 @@ function generateMino(field,currentMinoProperties) {
     }
     else{
         gameOver = true;
+        updatedTopScoreDisplay();
         console.log("genarateMIno Game Over", gameOver);
     }
 }
