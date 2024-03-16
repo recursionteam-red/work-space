@@ -193,7 +193,7 @@ class Field {
                 if (shape[y][x] !== 0) {
                     let fieldY = position.y + y;
                     let fieldX = position.x + x;
-                    if (fieldY >= 0 && fieldY < this.height && fieldX >= 0 && fieldX < this.width&& !this.grid[fieldY][fieldX].isWall) {
+                    if (fieldY >= 0 && fieldY < this.height && fieldX >= 0 && fieldX < this.width) {
                         this.grid[fieldY][fieldX].value = 1;
                         this.grid[fieldY][fieldX].isWall = false;
                         this.grid[fieldY][fieldX].color = color;
@@ -437,13 +437,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         ...currentMinoProperties,
                         shape: JSON.parse(JSON.stringify(currentMinoProperties.shape))
                     };
+                    const rotatedShape = minoRotate(currentMinoProperties.shape);
+                    console.log("回した後", rotatedShape);
+                    currentMinoProperties.shape = rotatedShape;
+                    console.log("いれたあと", currentMinoProperties.shape);
+                    moved = true;
+                    console.log("Mino rotated successfully"); 
                 }
-                const rotatedShape = minoRotate(currentMinoProperties.shape);
-                console.log("回した後", rotatedShape);
-                currentMinoProperties.shape = rotatedShape;
-                console.log("いれたあと", currentMinoProperties.shape);
-                moved = true;
-                console.log("Mino rotated successfully"); 
                 event.preventDefault(); // ページのスクロールを防ぐ
                 break;
             default:
@@ -579,7 +579,6 @@ function updateField(field, currentMinoProperties, previousPosition) {
 }
 
 function minoOperate(minoPosition, action) {
-    // 仮作成
     // action: 'left', 'right', 'down', 'rotate'
     switch (action) {
         case 'Arrowleft':
@@ -632,36 +631,39 @@ function collisionCheck(field, minoShape, minoPosition, action) {
 // arrowDown以外の操作で衝突があるかどうかをチェックする関数
 function isColliding(field, minoShape, minoPosition, action) {
     let newShape = minoShape;
+    let newPosition = {...minoPosition};
 
     if (action === 'ArrowUp') {
-        newShape = minoRotate(newShape); // 回転した新しい形状を取得
+        newShape = minoRotate(newShape);
+        // 回転後のミノの中心位置を計算
+        const shapeHeight = newShape.length;
+        const shapeWidth = newShape[0].length;
+        newPosition.x += Math.floor((minoShape[0].length - shapeWidth) / 2);
+        newPosition.y += Math.floor((minoShape.length - shapeHeight) / 2);
     }
     
     // 更新された位置と形状で衝突チェック
     for (let y = 0; y < newShape.length; y++) {
         for (let x = 0; x < newShape[y].length; x++) {
             if (newShape[y][x] !== 0) {
-                let fieldY = minoPosition.y + y;
-                let fieldX = minoPosition.x + x;
-                console.log(fieldY, "fieldY", fieldX, "fieldX");
-                if(field.grid[fieldY][fieldX].isWall && field.grid[fieldY][fieldX].value === 100){
+                let fieldY = newPosition.y + y;
+                let fieldX = newPosition.x + x;
+                
+                if (field.grid[fieldY][fieldX].isWall && field.grid[fieldY][fieldX].value === 100) {
                     console.log("壁との衝突があります");
                     return true;
                 }
                 
-
                 if (field.grid[fieldY][fieldX].value !== 0 && !field.grid[fieldY][fieldX].operatingMino) {
                     console.log("他のミノとの衝突があります");
-                    return true; // 他のミノとの衝突
+                    return true;
                 }
             }
         }
     }
-    
     console.log("衝突がありません");
-    return false; // 衝突なし
+    return false;
 }
-
 
 // 初期落下位置のセーフティーチェック
 function canPlaceMino(field, minoShape, initialPosition) {
