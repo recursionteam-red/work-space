@@ -296,6 +296,8 @@ class Mino {
 let ctx;
 let previousMinoProperties;
 let intervalId = null;
+let gameOver = false;
+let currentScore = 0;
 // DOMContentLoaded イベントリスナー内で field インスタンスを初期化
 //ページが完全に読み込まれた後に実行
 document.addEventListener('DOMContentLoaded', function() {
@@ -305,7 +307,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let field = new Field(22, 12);
     const mino = new Mino(); // Minoクラスのインスタンスを作成
     let currentMinoProperties = mino.getRandomShapeAndColor(); // メソッドを呼び出してプロパティを取得
-    let newMinoPosition;
     let moved = false;
 
     //////////////////////////
@@ -320,7 +321,7 @@ document.addEventListener('DOMContentLoaded', function() {
     welcomeBgm.loop = true; // ループを有効化
     welcomeBgm.play();
 
-    const canvas = document.getElementById('play-canvas');
+    let canvas = document.getElementById('play-canvas');
     if (canvas) {
         ctx = canvas.getContext('2d');
         canvas.width = 360;
@@ -343,6 +344,26 @@ document.addEventListener('DOMContentLoaded', function() {
         startBgm.loop = true; // ループを有効化
         startBgm.play(); // プレイ用のBGMを再生
         startAutoDown(); // 1秒ごとに落下
+        if (gameOver) {
+            console.log("Starting a new game");
+            // ゲームオーバー状態の場合、新しいゲームを開始
+            currentScore = 0; // スコアをリセット
+            updateScoreDisplay(); // スコア表示を更新
+            previousMinoProperties = null;
+            intervalId = null;
+            gameOver = false;
+            field = new Field(22, 12); // 新しいフィールドを作成
+            currentMinoProperties = mino.getRandomShapeAndColor(); // 新しいミノを生成
+            if (canvas) {
+                canvas.width = 360;
+                canvas.height = 660;
+
+                // 初期フィールドの描画
+                drawField(field);
+                // ミノの生成とフィールドへの配置
+                currentMinoProperties.centerPosition = generateMino(field,currentMinoProperties);
+            }
+        }
     });
 
     // ポーズボタンを押した時の処理
@@ -445,9 +466,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 新しいミノの初期位置を設定
                 
                 if (!canPlaceMino(field, currentMinoProperties.shape, currentMinoProperties.centerPosition)) {
-                    console.log("Game Over");
-                    // ゲームオーバー処理をここに記述
-                    return; // これ以上の処理を停止
+                    gameOver = true;
+                    console.log("Game Over",gameOver);
                 }
                 // 新しいミノでゲームを続けるために自動落下を再開
                 startAutoDown();
@@ -477,9 +497,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // 新しいミノの初期位置を設定
             
             if (!canPlaceMino(field, currentMinoProperties.shape, currentMinoProperties.centerPosition)) {
-                console.log("Game Over");
-                // ゲームオーバー処理をここに記述
-                return; // これ以上の処理を停止
+                gameOver = true;
+                console.log("Game Over", gameOver);
             }
             // 新しいミノでゲームを続けるために自動落下を再開
             startAutoDown();
@@ -708,8 +727,6 @@ function minoDelete(field) {
 
 
 
-// スコアを保持する変数
-let currentScore = 0;
 
 // 行が消去されたときにスコアを加算して表示を更新する関数
 function updateScore(linesCleared) {
@@ -787,7 +804,8 @@ function generateMino(field,currentMinoProperties) {
         return startPosition;
     }
     else{
-        console.log("genarateMIno Game Over");
+        gameOver = true;
+        console.log("genarateMIno Game Over", gameOver);
     }
 }
 
