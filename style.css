@@ -1,3 +1,7 @@
+.zentai{
+    width: 100vw;
+    height: 100vh;
+}
 .pixel-button {
 
     font-size: 16px; /* ピクセルフォントのサイズ */

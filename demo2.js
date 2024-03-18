@@ -1,5 +1,5 @@
 const mainDiv = document.createElement("div");
-mainDiv.classList.add("d-flex", "justify-content-center","align-items-center", "vh-100", "flex-column");
+mainDiv.classList.add("zentai", "d-flex", "justify-content-center","align-items-center", "vh-100", "flex-column");
 const titleDiv = document.createElement("div");
 const show = document.createElement("div");
 show.classList.add("d-flex", "justify-content-center", "align-items-center", "m-3");
