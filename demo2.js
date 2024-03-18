@@ -9,14 +9,14 @@ const paramDiv = document.createElement("div");
 //大枠
 
 
-titleDiv.classList.add("d-flex","justify-content-center", "align-items-center", "col-2", "m-5", "h-40");
+titleDiv.classList.add("d-flex","justify-content-center", "align-items-center", "col-2", "m-5", "vh-40");
 const title = document.createElement("h1");
 title.innerHTML = "Tetris";
 titleDiv.appendChild(title);
 //タイトル
 
 
-operateDiv.classList.add("div-overlay", "custom-margin", "d-flex", "justify-content-center", "align-items-center","bg-purple", "m-5", "p-2", "h-100","flex-column", "col-3");
+operateDiv.classList.add("div-overlay", "custom-margin", "d-flex", "justify-content-center", "align-items-center","bg-purple", "m-5", "p-2", "vh-100","flex-column", "col-3");
 //左画面の枠に設定
 const startButton = document.createElement("button");
 startButton.classList.add("btn","pixel-button");
@@ -37,7 +37,7 @@ pauseButton.appendChild(h2_2);
 //ポーズボタン
 
 const explainDiv = document.createElement("div");
-explainDiv.classList.add("w-100", "d-flex", "flex-column", "justify-content-center", "align-items-center", "p-2");
+explainDiv.classList.add("vw-100", "d-flex", "flex-column", "justify-content-center", "align-items-center", "p-2");
 const explainWrapper1 = document.createElement("div");
 const explainWrapper2 = document.createElement("div");
 const explainWrapper3 = document.createElement("div");
@@ -60,9 +60,9 @@ explainDiv.appendChild(explainWrapper3);
 //操作説明
 
 const buttonWrapper1 = document.createElement("div");
-buttonWrapper1.classList.add("w-100", "p-2", "d-flex", "justify-content-center", "align-items-center");
+buttonWrapper1.classList.add("vw-100", "p-2", "d-flex", "justify-content-center", "align-items-center");
 const buttonWrapper2 = document.createElement("div");
-buttonWrapper2.classList.add("w-100", "p-2", "d-flex", "justify-content-center", "align-items-center", "m-5");
+buttonWrapper2.classList.add("vw-100", "p-2", "d-flex", "justify-content-center", "align-items-center", "m-5");
 buttonWrapper1.appendChild(startButton);
 buttonWrapper2.appendChild(pauseButton);
 operateDiv.appendChild(buttonWrapper1);
@@ -71,7 +71,7 @@ operateDiv.appendChild(explainDiv);
 //左画面作成
 
 const displayDiv = document.createElement("div");
-displayDiv.classList.add("d-flex", "custom-margin", "justify-content-center", "align-items-center","bg-primary", "m-8", "h-70", "col-3");
+displayDiv.classList.add("d-flex", "custom-margin", "justify-content-center", "align-items-center","bg-primary", "m-8", "vh-70", "col-3");
 displayDiv.style.width = "360px";
 displayDiv.style.height= "660px";
 const display = document.createElement("canvas");
