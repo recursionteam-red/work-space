@@ -358,31 +358,6 @@ document.addEventListener('DOMContentLoaded', function() {
         startBgm.play(); // プレイ用のBGMを再生
         startAutoDown(); // 1秒ごとに落下
         keyEvent = true; // キーボードイベントを有効化
-        if (gameOver) {
-            console.log("Starting a new game");
-            // ゲームオーバー状態の場合、新しいゲームを開始
-            updatedTopScoreDisplay(); // 最高スコア表示を更新
-            currentScore = 0; // スコアをリセット
-            updateScoreDisplay(); // スコア表示を更新
-            previousMinoProperties = null;
-            intervalId = null;
-            gameOver = false;
-            field = new Field(22, 12); // 新しいフィールドを作成
-            lastLeftRightMoveTime = 0;
-            lastDownMoveTime = 0;
-            lastRotateTime = 0;
-            currentMinoProperties = mino.getRandomShapeAndColor(); // 新しいミノを生成
-            if (canvas) {
-                canvas.width = 360;
-                canvas.height = 660;
-
-                // 初期フィールドの描画
-                drawField(field);
-                // ミノの生成とフィールドへの配置
-                currentMinoProperties.centerPosition = generateMino(field,currentMinoProperties);
-            }
-        }
-
     });
 
     // ポーズボタンを押した時の処理
@@ -434,11 +409,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 event.preventDefault();
                 break;
+            case "h":
+                hardDrop();
+                console.log("hキーが押されました");
+
             default:
                 event.preventDefault();
                 break;
         }
     }
+    function hardDrop() {
+        // ハードドロップ
+        while (!collisionCheck(field, currentMinoProperties.shape, {x: currentMinoProperties.centerPosition.x, y: currentMinoProperties.centerPosition.y + 1}, "ArrowDown")) {
+            previousMinoProperties = {
+                ...currentMinoProperties,
+                centerPosition: { ...currentMinoProperties.centerPosition }
+            };
+            currentMinoProperties.centerPosition.y += 1;
+            moved = true;
+            updateFieldAndDraw();
+        }
+    }
+    
     function moveMinoLeft() {
         // 左に移動する処理
         console.log(currentMinoProperties.centerPosition.x, "こりでぃんぐまえのX");
